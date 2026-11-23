@@ -38,6 +38,13 @@ export interface HistoryStep {
   timestamp: number;
 }
 
+export interface FilterRegion {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export interface PaletteResult {
   image_data: string;
   palette: [number, number, number][];

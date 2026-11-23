@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { ImagePlus, Sparkles, Upload } from 'lucide-react';
 import { BrushEngine, BrushOptions } from '../../utils/brushEngine';
-import { BrushType, PixelInfo, ToolType } from '../../types';
+import { BrushType, FilterRegion, PixelInfo, ToolType } from '../../types';
 
 interface CanvasViewportProps {
   baseImageData: string | null;
@@ -17,6 +17,8 @@ interface CanvasViewportProps {
   onPanChange: (newPan: { x: number; y: number }) => void;
   onPixelHover: (info: PixelInfo | null) => void;
   onDrawingCommit: (drawingDataUrl: string) => void;
+  onApplyMedianRect?: (rect: FilterRegion) => void;
+  isProcessingFilter?: boolean;
   onLoadSample: () => void;
   onImportFile: () => void;
   onDropImage?: (dataUrl: string, fileName: string) => void;
@@ -39,6 +41,8 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
   onPanChange,
   onPixelHover,
   onDrawingCommit,
+  onApplyMedianRect,
+  isProcessingFilter,
   onLoadSample,
   onImportFile,
   onDropImage,
@@ -53,6 +57,11 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
   const [spacePressed, setSpacePressed] = useState(false);
   const [panStart, setPanStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [imageSize, setImageSize] = useState<{ width: number; height: number } | null>(null);
+
+  // Rectangular selection states for localized median filter
+  const [isSelectingRect, setIsSelectingRect] = useState(false);
+  const [rectStart, setRectStart] = useState<{ x: number; y: number } | null>(null);
+  const [currentRect, setCurrentRect] = useState<FilterRegion | null>(null);
 
   // Keyboard Space listener for Pan mode
   useEffect(() => {
@@ -173,6 +182,25 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
     [imageSize, pan, zoom]
   );
 
+  // Convert client viewport coordinates to image pixel coordinates (clamped to image bounds)
+  const clientToClampedCoords = useCallback(
+    (clientX: number, clientY: number): { x: number; y: number } | null => {
+      if (!containerRef.current || !imageSize) return null;
+      const rect = containerRef.current.getBoundingClientRect();
+      const vx = clientX - rect.left - pan.x;
+      const vy = clientY - rect.top - pan.y;
+
+      const ix = Math.floor(vx / zoom);
+      const iy = Math.floor(vy / zoom);
+
+      return {
+        x: Math.max(0, Math.min(imageSize.width, ix)),
+        y: Math.max(0, Math.min(imageSize.height, iy)),
+      };
+    },
+    [imageSize, pan, zoom]
+  );
+
   // Sample pixel from combined composite view
   const samplePixel = useCallback(
     (coords: { x: number; y: number } | null) => {
@@ -210,7 +238,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
     [baseCanvasRef, drawingCanvasRef, onPixelHover, showDrawingLayer]
   );
 
-  // Mouse event handlers for Drawing and Panning
+  // Mouse event handlers for Drawing, Rectangle selection, and Panning
   const handlePointerDown = (e: React.PointerEvent) => {
     // Middle click or Space + Left click = Pan
     if (e.button === 1 || (e.button === 0 && spacePressed)) {
@@ -219,10 +247,19 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
       return;
     }
 
-    if (e.button === 0 && activeTool === 'brush') {
-      const coords = clientToImageCoords(e.clientX, e.clientY);
-      if (coords && brushEngineRef.current) {
-        brushEngineRef.current.startStroke(coords);
+    if (e.button === 0 && !spacePressed) {
+      if (activeTool === 'brush') {
+        const coords = clientToImageCoords(e.clientX, e.clientY);
+        if (coords && brushEngineRef.current) {
+          brushEngineRef.current.startStroke(coords);
+        }
+      } else if (activeTool === 'median') {
+        const coords = clientToClampedCoords(e.clientX, e.clientY);
+        if (coords) {
+          setIsSelectingRect(true);
+          setRectStart(coords);
+          setCurrentRect({ x: coords.x, y: coords.y, width: 0, height: 0 });
+        }
       }
     }
   };
@@ -243,6 +280,15 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
       if (coords) {
         brushEngineRef.current.continueStroke(coords);
       }
+    } else if (activeTool === 'median' && isSelectingRect && rectStart) {
+      const cur = clientToClampedCoords(e.clientX, e.clientY);
+      if (cur) {
+        const x = Math.min(rectStart.x, cur.x);
+        const y = Math.min(rectStart.y, cur.y);
+        const width = Math.abs(cur.x - rectStart.x);
+        const height = Math.abs(cur.y - rectStart.y);
+        setCurrentRect({ x, y, width, height });
+      }
     }
   };
 
@@ -257,6 +303,13 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
       if (didDraw && drawingCanvasRef.current) {
         onDrawingCommit(drawingCanvasRef.current.toDataURL('image/png'));
       }
+    } else if (activeTool === 'median' && isSelectingRect) {
+      setIsSelectingRect(false);
+      if (currentRect && currentRect.width >= 3 && currentRect.height >= 3) {
+        onApplyMedianRect?.(currentRect);
+      }
+      setCurrentRect(null);
+      setRectStart(null);
     }
   };
 
@@ -268,6 +321,13 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
       if (didDraw && drawingCanvasRef.current) {
         onDrawingCommit(drawingCanvasRef.current.toDataURL('image/png'));
       }
+    } else if (activeTool === 'median' && isSelectingRect) {
+      setIsSelectingRect(false);
+      if (currentRect && currentRect.width >= 3 && currentRect.height >= 3) {
+        onApplyMedianRect?.(currentRect);
+      }
+      setCurrentRect(null);
+      setRectStart(null);
     }
   };
 
@@ -299,11 +359,27 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
       className={`flex-1 relative overflow-hidden bg-ps-canvas flex items-center justify-center select-none ${
         spacePressed || isPanning
           ? 'cursor-grab active:cursor-grabbing'
-          : activeTool === 'brush'
+          : activeTool === 'brush' || activeTool === 'median'
           ? 'cursor-crosshair'
           : 'cursor-default'
       }`}
     >
+      {/* 中值濾波模式引導提示 */}
+      {activeTool === 'median' && baseImageData && (
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 bg-ps-panel/95 border border-ps-border/80 text-ps-textBright px-4 py-1.5 rounded-full shadow-2xl text-xs flex items-center space-x-2 backdrop-blur z-30 pointer-events-none">
+          <span className="w-2 h-2 rounded-full bg-ps-accent animate-pulse" />
+          <span>請在畫布上拖曳框選欲去噪區域（放開即處理，可連續框選）</span>
+        </div>
+      )}
+
+      {/* 濾波計算中指示器 */}
+      {isProcessingFilter && (
+        <div className="absolute top-12 left-1/2 -translate-x-1/2 bg-ps-panel/95 border border-ps-accent/50 text-ps-textBright px-4 py-2 rounded-lg shadow-2xl text-xs flex items-center space-x-2 backdrop-blur z-40">
+          <div className="w-3.5 h-3.5 border-2 border-ps-accent border-t-transparent rounded-full animate-spin" />
+          <span>正在計算局部中值濾波...</span>
+        </div>
+      )}
+
       {/* 1. 若無圖片時呈現：Photoshop 質感情境引導區 */}
       {!baseImageData && (
         <div className="flex flex-col items-center justify-center p-8 max-w-md text-center bg-ps-panel/80 rounded-2xl border border-ps-border shadow-2xl backdrop-blur">
@@ -366,6 +442,35 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
             }`}
             style={{ imageRendering: zoom > 2 ? 'pixelated' : 'auto' }}
           />
+
+          {/* 矩形選框視覺回饋 (中值濾波框選) */}
+          {activeTool === 'median' && isSelectingRect && currentRect && currentRect.width > 0 && currentRect.height > 0 && (
+            <div
+              className="absolute pointer-events-none z-30"
+              style={{
+                left: `${currentRect.x}px`,
+                top: `${currentRect.y}px`,
+                width: `${currentRect.width}px`,
+                height: `${currentRect.height}px`,
+                border: `${Math.max(1, 1.5 / zoom)}px dashed #3b82f6`,
+                backgroundColor: 'rgba(59, 130, 246, 0.22)',
+                boxShadow: '0 0 0 1px rgba(0, 0, 0, 0.6)',
+              }}
+            >
+              <div
+                className="absolute -top-7 left-0 bg-[#1e1e1e]/95 text-white text-[11px] px-2 py-0.5 rounded border border-ps-border flex items-center space-x-1.5 shadow-lg select-none whitespace-nowrap"
+                style={{
+                  transform: `scale(${1 / Math.max(zoom, 0.4)})`,
+                  transformOrigin: 'bottom left',
+                }}
+              >
+                <span className="font-mono text-ps-accent font-semibold">
+                  {currentRect.width} × {currentRect.height} px
+                </span>
+                <span className="text-[10px] text-gray-300">中值去噪區</span>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

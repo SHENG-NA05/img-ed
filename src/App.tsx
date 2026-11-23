@@ -7,6 +7,7 @@ import { CanvasViewport } from './components/canvas/CanvasViewport';
 import { GifStudioWindow } from './components/gif/GifStudioWindow';
 import {
   BrushType,
+  FilterRegion,
   HistoryStep,
   LaplacianResult,
   LaplacianViewMode,
@@ -58,6 +59,8 @@ export const App: React.FC = () => {
   const [paletteDither, setPaletteDither] = useState<boolean>(true);
   const [extractedPalette, setExtractedPalette] = useState<[number, number, number][]>([]);
   const [medianKernel, setMedianKernel] = useState<number>(3);
+  const [medianCount, setMedianCount] = useState<number>(0);
+  const [isProcessingFilter, setIsProcessingFilter] = useState<boolean>(false);
 
   // Laplacian filter states
   const [laplacianKernelType, setLaplacianKernelType] = useState<string>('8');
@@ -128,6 +131,7 @@ export const App: React.FC = () => {
         setPreviewImageData(null);
         setImageDimensions({ width: img.width, height: img.height });
         setActiveTool('none');
+        setMedianCount(0);
 
         // Clear drawing canvas
         if (drawingCanvasRef.current) {
@@ -219,6 +223,7 @@ export const App: React.FC = () => {
     if (originalImageData) {
       setBaseImageData(originalImageData);
       setPreviewImageData(null);
+      setMedianCount(0);
       if (drawingCanvasRef.current) {
         const dCtx = drawingCanvasRef.current.getContext('2d');
         dCtx?.clearRect(0, 0, drawingCanvasRef.current.width, drawingCanvasRef.current.height);
@@ -259,9 +264,17 @@ export const App: React.FC = () => {
 
   // Tool Selection (Eliminates redundant double IPC invocation)
   const handleSelectTool = (tool: ToolType) => {
+    if (activeTool === 'median' && tool !== 'median') {
+      setPreviewImageData(null);
+      setMedianCount(0);
+    }
     setActiveTool(tool);
     if (tool === 'laplacian') {
       setLaplacianMode('sharpened');
+    }
+    if (tool === 'median') {
+      setPreviewImageData(null);
+      setMedianCount(0);
     }
   };
 
@@ -297,12 +310,6 @@ export const App: React.FC = () => {
           if (!isCancelled) setPreviewImageData(preview);
         })
         .catch(console.error);
-    } else if (activeTool === 'median') {
-      invokeMedian(baseImageData, medianKernel)
-        .then((preview) => {
-          if (!isCancelled) setPreviewImageData(preview);
-        })
-        .catch(console.error);
     } else if (activeTool === 'laplacian') {
       invokeLaplacian(baseImageData, laplacianKernelType, laplacianStrength)
         .then((res) => {
@@ -315,7 +322,7 @@ export const App: React.FC = () => {
           }
         })
         .catch(console.error);
-    } else {
+    } else if (activeTool !== 'median') {
       setPreviewImageData(null);
       setLaplacianCache(null);
     }
@@ -328,7 +335,6 @@ export const App: React.FC = () => {
     binaryThreshold,
     paletteCount,
     paletteDither,
-    medianKernel,
     laplacianKernelType,
     laplacianStrength,
     baseImageData,
@@ -342,6 +348,43 @@ export const App: React.FC = () => {
     else if (mode === 'mask') setPreviewImageData(laplacianCache.mask_data);
     else setPreviewImageData(laplacianCache.sharpened_data);
   };
+
+  // Localized Median Filter Rect handler (continuous boxing support)
+  const handleApplyMedianRect = useCallback(
+    async (rect: FilterRegion) => {
+      const currentSource = previewImageData || baseImageData;
+      if (!currentSource) return;
+
+      setIsProcessingFilter(true);
+      try {
+        const result = await invokeMedian(currentSource, medianKernel, rect);
+        setPreviewImageData(result);
+        setMedianCount((prev) => prev + 1);
+      } catch (err) {
+        console.error('局部中值濾波計算失敗:', err);
+      } finally {
+        setIsProcessingFilter(false);
+      }
+    },
+    [previewImageData, baseImageData, medianKernel]
+  );
+
+  const handleResetMedianPreview = useCallback(() => {
+    setPreviewImageData(null);
+    setMedianCount(0);
+  }, []);
+
+  const handleApplyMedian = useCallback(() => {
+    if (previewImageData) {
+      const countDesc = medianCount > 0 ? ` (${medianCount} 處區域)` : '';
+      const desc = `套用局部中值濾波${countDesc}`;
+      setBaseImageData(previewImageData);
+      setPreviewImageData(null);
+      setMedianCount(0);
+      setActiveTool('none');
+      pushHistory(desc, previewImageData);
+    }
+  }, [previewImageData, medianCount, pushHistory]);
 
   // Apply Tools
   const handleApplyCurrentPreview = (desc: string) => {
@@ -357,6 +400,7 @@ export const App: React.FC = () => {
     setPreviewImageData(null);
     setActiveTool('none');
     setLaplacianCache(null);
+    setMedianCount(0);
   };
 
   // Drawing commit
@@ -519,6 +563,8 @@ export const App: React.FC = () => {
           onPanChange={setPan}
           onPixelHover={setPixelInfo}
           onDrawingCommit={handleDrawingCommit}
+          onApplyMedianRect={handleApplyMedianRect}
+          isProcessingFilter={isProcessingFilter}
           onLoadSample={() => loadImageData(createSampleTestImage(), '高解析測試圖卡.png')}
           onImportFile={handleImport}
           onDropImage={(data, name) => loadImageData(data, name)}
@@ -545,7 +591,9 @@ export const App: React.FC = () => {
           onApplyNegative={() => handleApplyCurrentPreview('套用負片反轉')}
           medianKernel={medianKernel}
           onMedianKernelChange={setMedianKernel}
-          onApplyMedian={() => handleApplyCurrentPreview(`套用中值濾波 (${medianKernel}×${medianKernel})`)}
+          onApplyMedian={handleApplyMedian}
+          medianCount={medianCount}
+          onResetMedianPreview={handleResetMedianPreview}
           laplacianKernelType={laplacianKernelType}
           onLaplacianKernelChange={setLaplacianKernelType}
           laplacianStrength={laplacianStrength}

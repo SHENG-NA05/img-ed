@@ -1,6 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import { open, save } from '@tauri-apps/plugin-dialog';
-import { GifExportOptions, GifFrameInput, LaplacianResult, PaletteResult } from '../types';
+import { GifExportOptions, GifFrameInput, LaplacianResult, PaletteResult, FilterRegion } from '../types';
 
 export const isTauri = () => {
   return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
@@ -66,11 +66,19 @@ export async function invokeNegative(imageData: string): Promise<string> {
   return fallbackClientFilter(imageData, (r, g, b) => [255 - r, 255 - g, 255 - b]);
 }
 
-export async function invokeMedian(imageData: string, kernelSize: number): Promise<string> {
+export async function invokeMedian(
+  imageData: string,
+  kernelSize: number,
+  region?: FilterRegion | null
+): Promise<string> {
   if (isTauri()) {
-    return await invoke<string>('process_median', { imageData, kernelSize });
+    return await invoke<string>('process_median', {
+      imageData,
+      kernelSize,
+      region: region || null,
+    });
   }
-  return imageData;
+  return fallbackClientMedian(imageData, kernelSize, region);
 }
 
 export async function invokeLaplacian(
@@ -270,6 +278,76 @@ function fallbackClientFilter(
         d[i + 1] = ng;
         d[i + 2] = nb;
       }
+      ctx.putImageData(imgData, 0, 0);
+      resolve(c.toDataURL('image/png'));
+    };
+    img.src = dataUrl;
+  });
+}
+
+// Client fallback for median filter with region support
+function fallbackClientMedian(
+  dataUrl: string,
+  kernelSize: number,
+  region?: FilterRegion | null
+): Promise<string> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const c = document.createElement('canvas');
+      c.width = img.width;
+      c.height = img.height;
+      const ctx = c.getContext('2d');
+      if (!ctx) return resolve(dataUrl);
+      ctx.drawImage(img, 0, 0);
+
+      const k = Math.min(Math.max(kernelSize % 2 === 0 ? kernelSize + 1 : kernelSize, 3), 7);
+      const radius = Math.floor(k / 2);
+
+      const sx = region ? Math.max(0, Math.min(img.width, region.x)) : 0;
+      const sy = region ? Math.max(0, Math.min(img.height, region.y)) : 0;
+      const ex = region ? Math.min(img.width, sx + region.width) : img.width;
+      const ey = region ? Math.min(img.height, sy + region.height) : img.height;
+
+      if (sx >= ex || sy >= ey) {
+        return resolve(dataUrl);
+      }
+
+      const imgData = ctx.getImageData(0, 0, c.width, c.height);
+      const d = imgData.data;
+      const copy = new Uint8ClampedArray(d);
+
+      const rVals: number[] = new Array(k * k);
+      const gVals: number[] = new Array(k * k);
+      const bVals: number[] = new Array(k * k);
+      const mid = Math.floor((k * k) / 2);
+
+      for (let y = sy; y < ey; y++) {
+        for (let x = sx; x < ex; x++) {
+          let count = 0;
+          for (let dy = -radius; dy <= radius; dy++) {
+            for (let dx = -radius; dx <= radius; dx++) {
+              const nx = Math.min(Math.max(x + dx, 0), img.width - 1);
+              const ny = Math.min(Math.max(y + dy, 0), img.height - 1);
+              const idx = (ny * img.width + nx) * 4;
+              rVals[count] = copy[idx];
+              gVals[count] = copy[idx + 1];
+              bVals[count] = copy[idx + 2];
+              count++;
+            }
+          }
+          rVals.sort((a, b) => a - b);
+          gVals.sort((a, b) => a - b);
+          bVals.sort((a, b) => a - b);
+
+          const targetIdx = (y * img.width + x) * 4;
+          d[targetIdx] = rVals[mid];
+          d[targetIdx + 1] = gVals[mid];
+          d[targetIdx + 2] = bVals[mid];
+        }
+      }
+
       ctx.putImageData(imgData, 0, 0);
       resolve(c.toDataURL('image/png'));
     };

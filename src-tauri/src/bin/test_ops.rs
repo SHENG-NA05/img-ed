@@ -23,6 +23,14 @@ fn main() {
     assert!(median_filter(&med_dyn, 5).is_ok());
     assert!(median_filter(&med_dyn, 7).is_ok());
 
+    let region = FilterRegion {
+        x: 2,
+        y: 2,
+        width: 8,
+        height: 8,
+    };
+    assert!(median_filter_region(&med_dyn, 3, Some(region)).is_ok());
+
     println!("Testing Laplacian Filter...");
     let mut lap_img = RgbaImage::new(20, 20);
     for x in 0..20 {

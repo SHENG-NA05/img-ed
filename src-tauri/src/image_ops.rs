@@ -18,6 +18,14 @@ pub struct LaplacianResult {
     pub sharpened_data: String,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FilterRegion {
+    pub x: u32,
+    pub y: u32,
+    pub width: u32,
+    pub height: u32,
+}
+
 /// Helper to decode base64 data URL or raw base64 string into DynamicImage
 pub fn decode_image(image_base64: &str) -> Result<DynamicImage, String> {
     let raw_b64 = if let Some(idx) = image_base64.find(',') {
@@ -214,21 +222,46 @@ pub fn to_negative(img: &DynamicImage) -> Result<String, String> {
     encode_rgba_png(&neg_img)
 }
 
-/// Spatial Domain Median Filter: kernel sizes 3, 5, 7
+/// Spatial Domain Median Filter: kernel sizes 3, 5, 7.
+/// Supports filtering the entire image (when region is None)
+/// or filtering only within a specified bounding box region.
 pub fn median_filter(img: &DynamicImage, kernel_size: usize) -> Result<String, String> {
+    median_filter_region(img, kernel_size, None)
+}
+
+pub fn median_filter_region(
+    img: &DynamicImage,
+    kernel_size: usize,
+    region: Option<FilterRegion>,
+) -> Result<String, String> {
     let k = (kernel_size.clamp(3, 7) / 2) * 2 + 1;
     let radius = (k / 2) as i32;
     let rgba = img.to_rgba8();
     let (width, height) = rgba.dimensions();
 
-    let mut out_img = ImageBuffer::<Rgba<u8>, Vec<u8>>::new(width, height);
+    let (start_x, start_y, end_x, end_y) = match region {
+        Some(r) => {
+            let sx = r.x.min(width);
+            let sy = r.y.min(height);
+            let ex = (r.x.saturating_add(r.width)).min(width);
+            let ey = (r.y.saturating_add(r.height)).min(height);
+            (sx, sy, ex, ey)
+        }
+        None => (0, 0, width, height),
+    };
+
+    if start_x >= end_x || start_y >= end_y {
+        return encode_rgba_png(&rgba);
+    }
+
+    let mut out_img = rgba.clone();
     let mut r_vals = Vec::with_capacity(k * k);
     let mut g_vals = Vec::with_capacity(k * k);
     let mut b_vals = Vec::with_capacity(k * k);
     let mid = (k * k) / 2;
 
-    for y in 0..height {
-        for x in 0..width {
+    for y in start_y..end_y {
+        for x in start_x..end_x {
             r_vals.clear();
             g_vals.clear();
             b_vals.clear();
@@ -389,6 +422,28 @@ mod tests {
         let val8 = res8.unwrap();
         assert!(!val8.mask_data.is_empty());
         assert!(!val8.sharpened_data.is_empty());
+    }
+
+    #[test]
+    fn test_median_filter_region() {
+        let mut img = RgbaImage::new(30, 30);
+        for x in 0..30 {
+            for y in 0..30 {
+                img.put_pixel(x, y, Rgba([x as u8 * 2, y as u8 * 2, 50, 255]));
+            }
+        }
+        // Add salt & pepper noise in a 10x10 area (x: 5..15, y: 5..15)
+        img.put_pixel(10, 10, Rgba([255, 255, 255, 255]));
+        let dyn_img = DynamicImage::ImageRgba8(img);
+
+        let region = FilterRegion {
+            x: 5,
+            y: 5,
+            width: 10,
+            height: 10,
+        };
+        let res = median_filter_region(&dyn_img, 3, Some(region));
+        assert!(res.is_ok());
     }
 }
 

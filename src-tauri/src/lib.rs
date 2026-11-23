@@ -5,8 +5,8 @@ pub mod state;
 use base64::{engine::general_purpose::STANDARD as BASE64, Engine as _};
 use gif_ops::{create_gif_bytes, GifExportOptions, GifFrameInput};
 use image_ops::{
-    decode_image, laplacian_filter, median_filter, to_binary, to_grayscale, to_negative,
-    to_palette, LaplacianResult, PaletteResult,
+    decode_image, laplacian_filter, median_filter_region, to_binary, to_grayscale, to_negative,
+    to_palette, FilterRegion, LaplacianResult, PaletteResult,
 };
 use state::AppState;
 use std::fs;
@@ -38,9 +38,13 @@ fn process_negative(image_data: String) -> Result<String, String> {
 }
 
 #[tauri::command]
-fn process_median(image_data: String, kernel_size: usize) -> Result<String, String> {
+fn process_median(
+    image_data: String,
+    kernel_size: usize,
+    region: Option<FilterRegion>,
+) -> Result<String, String> {
     let img = decode_image(&image_data)?;
-    median_filter(&img, kernel_size)
+    median_filter_region(&img, kernel_size, region)
 }
 
 #[tauri::command]

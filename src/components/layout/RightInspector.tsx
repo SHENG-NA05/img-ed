@@ -40,6 +40,8 @@ interface RightInspectorProps {
   medianKernel: number;
   onMedianKernelChange: (size: number) => void;
   onApplyMedian: () => void;
+  medianCount?: number;
+  onResetMedianPreview?: () => void;
   // Laplacian
   laplacianKernelType: string;
   onLaplacianKernelChange: (type: string) => void;
@@ -81,6 +83,8 @@ export const RightInspector: React.FC<RightInspectorProps> = ({
   medianKernel,
   onMedianKernelChange,
   onApplyMedian,
+  medianCount,
+  onResetMedianPreview,
   laplacianKernelType,
   onLaplacianKernelChange,
   laplacianStrength,
@@ -327,6 +331,7 @@ export const RightInspector: React.FC<RightInspectorProps> = ({
               <Filter className="w-4 h-4 text-ps-accent" />
               <span>空間域中值濾波</span>
             </div>
+
             <div className="space-y-1.5">
               <label className="text-xs text-ps-text">滑動窗口核心大小</label>
               <div className="grid grid-cols-3 gap-1.5">
@@ -345,14 +350,38 @@ export const RightInspector: React.FC<RightInspectorProps> = ({
                 ))}
               </div>
             </div>
-            <div className="text-[11px] text-ps-textMuted bg-ps-canvas p-2.5 rounded border border-ps-border leading-relaxed">
-              核心在像素周圍滑動排序取中位數，能完美濾除孤立胡椒鹽雜訊，同時保護主體邊緣不受模糊破壞。
+
+            {/* 操作說明與已處理計數 */}
+            <div className="space-y-2 bg-ps-canvas p-2.5 rounded border border-ps-border">
+              <div className="text-[11px] text-ps-accent font-medium flex items-center space-x-1.5">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-ps-accent" />
+                <span>矩形去噪操作指引：</span>
+              </div>
+              <p className="text-[11px] text-ps-textMuted leading-relaxed">
+                在畫布上按住滑鼠左鍵拖曳出矩形選區，放開後自動對該區域進行中值濾波去噪。可連續框選多個區域。
+              </p>
+              <div className="flex items-center justify-between pt-1 border-t border-ps-border/60 text-xs">
+                <span className="text-ps-textMuted">已處理區域：</span>
+                <span className="font-mono font-bold text-ps-accent">
+                  {(medianCount || 0) > 0 ? `${medianCount} 處` : '尚未框選'}
+                </span>
+              </div>
             </div>
+
+            {(medianCount || 0) > 0 && onResetMedianPreview && (
+              <button
+                onClick={onResetMedianPreview}
+                className="w-full py-1.5 px-3 bg-ps-hover hover:bg-ps-active text-ps-text rounded text-xs border border-ps-border transition-colors flex items-center justify-center space-x-1"
+              >
+                <span>重設預覽（復原所有框選）</span>
+              </button>
+            )}
+
             <div className="flex space-x-2 pt-2">
               <button
                 onClick={onApplyMedian}
-                disabled={!imageLoaded}
-                className="flex-1 py-1.5 px-3 bg-ps-accent hover:bg-ps-accentHover text-white rounded text-xs font-medium flex items-center justify-center space-x-1 shadow transition-colors disabled:opacity-50"
+                disabled={!imageLoaded || (medianCount || 0) === 0}
+                className="flex-1 py-1.5 px-3 bg-ps-accent hover:bg-ps-accentHover text-white rounded text-xs font-medium flex items-center justify-center space-x-1 shadow transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Check className="w-3.5 h-3.5" />
                 <span>套用濾波</span>
