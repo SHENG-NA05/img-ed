@@ -12,24 +12,52 @@ export interface Point {
   y: number;
 }
 
+export function parseHexColor(hexStr: string): { r: number; g: number; b: number } {
+  let hex = hexStr.replace('#', '').trim();
+  if (hex.length === 3) {
+    hex = hex
+      .split('')
+      .map((c) => c + c)
+      .join('');
+  }
+  const num = parseInt(hex, 16);
+  if (isNaN(num) || hex.length < 6) {
+    return { r: 0, g: 0, b: 0 };
+  }
+  return {
+    r: (num >> 16) & 255,
+    g: (num >> 8) & 255,
+    b: num & 255,
+  };
+}
+
 export class BrushEngine {
   private ctx: CanvasRenderingContext2D;
   private lastPoint: Point | null = null;
   private isDrawing = false;
+  private drewSomething = false;
   private options: BrushOptions;
+  private cachedRgb: { r: number; g: number; b: number };
   private airbrushTimer: number | null = null;
 
   constructor(ctx: CanvasRenderingContext2D, options: BrushOptions) {
     this.ctx = ctx;
     this.options = options;
+    this.cachedRgb = parseHexColor(options.color);
+  }
+
+  public setContext(ctx: CanvasRenderingContext2D) {
+    this.ctx = ctx;
   }
 
   public updateOptions(options: BrushOptions) {
     this.options = options;
+    this.cachedRgb = parseHexColor(options.color);
   }
 
   public startStroke(p: Point) {
     this.isDrawing = true;
+    this.drewSomething = true;
     this.lastPoint = p;
     this.renderStroke(p, p);
 
@@ -45,24 +73,27 @@ export class BrushEngine {
     const stepSize = Math.max(1, this.options.size * 0.2);
     const steps = Math.ceil(dist / stepSize);
 
+    let prevPoint = this.lastPoint;
     for (let i = 1; i <= steps; i++) {
       const t = i / steps;
       const interpX = this.lastPoint.x + (p.x - this.lastPoint.x) * t;
       const interpY = this.lastPoint.y + (p.y - this.lastPoint.y) * t;
-      this.renderStroke({ x: interpX, y: interpY }, this.lastPoint);
+      const currentPoint = { x: interpX, y: interpY };
+      this.renderStroke(currentPoint, prevPoint);
+      prevPoint = currentPoint;
     }
 
     this.lastPoint = p;
-
-    if (this.options.type === 'airbrush') {
-      this.lastPoint = p;
-    }
+    this.drewSomething = true;
   }
 
-  public endStroke() {
+  public endStroke(): boolean {
+    const didDraw = this.isDrawing && this.drewSomething;
     this.isDrawing = false;
+    this.drewSomething = false;
     this.lastPoint = null;
     this.stopAirbrushAccumulation();
+    return didDraw;
   }
 
   private startAirbrushAccumulation(_p: Point) {
@@ -70,6 +101,7 @@ export class BrushEngine {
     const spray = () => {
       if (!this.isDrawing || !this.lastPoint) return;
       this.renderAirbrush(this.lastPoint);
+      this.drewSomething = true;
       this.airbrushTimer = window.requestAnimationFrame(spray);
     };
     this.airbrushTimer = window.requestAnimationFrame(spray);
@@ -82,12 +114,12 @@ export class BrushEngine {
     }
   }
 
-  private renderStroke(p: Point, _prev: Point) {
+  private renderStroke(p: Point, prev?: Point) {
     this.ctx.save();
 
     switch (this.options.type) {
       case 'pen':
-        this.renderPen(p);
+        this.renderPen(p, prev);
         break;
       case 'crayon':
         this.renderCrayon(p);
@@ -102,21 +134,33 @@ export class BrushEngine {
         this.renderWatercolor(p);
         break;
       case 'eraser':
-        this.renderEraser(p);
+        this.renderEraser(p, prev);
         break;
     }
 
     this.ctx.restore();
   }
 
-  // 1. 鋼筆：高銳利度、實心平滑圓形
-  private renderPen(p: Point) {
+  // 1. 鋼筆：高銳利度、實心平滑圓形與平滑連接線
+  private renderPen(p: Point, prev?: Point) {
     this.ctx.globalCompositeOperation = 'source-over';
-    this.ctx.globalAlpha = this.options.opacity;
+    this.ctx.globalAlpha = Math.max(0.01, this.options.opacity);
     this.ctx.fillStyle = this.options.color;
+    this.ctx.strokeStyle = this.options.color;
+    this.ctx.lineWidth = this.options.size;
+    this.ctx.lineCap = 'round';
+    this.ctx.lineJoin = 'round';
+
     this.ctx.beginPath();
     this.ctx.arc(p.x, p.y, this.options.size / 2, 0, Math.PI * 2);
     this.ctx.fill();
+
+    if (prev && (prev.x !== p.x || prev.y !== p.y)) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(prev.x, prev.y);
+      this.ctx.lineTo(p.x, p.y);
+      this.ctx.stroke();
+    }
   }
 
   // 2. 蠟筆：噪點顆粒遮罩與隨機散射邊緣
@@ -161,12 +205,7 @@ export class BrushEngine {
     const radius = Math.max(2, this.options.size / 2);
     const grad = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius);
 
-    // Parse hex to rgb
-    const hex = this.options.color.replace('#', '');
-    const r = parseInt(hex.substring(0, 2), 16) || 0;
-    const g = parseInt(hex.substring(2, 4), 16) || 0;
-    const b = parseInt(hex.substring(4, 6), 16) || 0;
-
+    const { r, g, b } = this.cachedRgb;
     const baseAlpha = this.options.opacity * 0.12;
     grad.addColorStop(0, `rgba(${r}, ${g}, ${b}, ${baseAlpha})`);
     grad.addColorStop(0.5, `rgba(${r}, ${g}, ${b}, ${baseAlpha * 0.5})`);
@@ -182,10 +221,7 @@ export class BrushEngine {
   private renderWatercolor(p: Point) {
     this.ctx.globalCompositeOperation = 'source-over';
     const radius = this.options.size / 2;
-    const hex = this.options.color.replace('#', '');
-    const r = parseInt(hex.substring(0, 2), 16) || 0;
-    const g = parseInt(hex.substring(2, 4), 16) || 0;
-    const b = parseInt(hex.substring(4, 6), 16) || 0;
+    const { r, g, b } = this.cachedRgb;
 
     // Outer wet edge ring (slightly darker rim)
     const rimGrad = this.ctx.createRadialGradient(p.x, p.y, radius * 0.65, p.x, p.y, radius);
@@ -211,12 +247,25 @@ export class BrushEngine {
     this.ctx.fill();
   }
 
-  // 6. 橡皮擦：使用 destination-out 精準消除 DrawingCanvas 筆劃
-  private renderEraser(p: Point) {
+  // 6. 橡皮擦：使用 destination-out 精準消除 DrawingCanvas 筆劃，並支援平滑連接線
+  private renderEraser(p: Point, prev?: Point) {
     this.ctx.globalCompositeOperation = 'destination-out';
-    this.ctx.globalAlpha = this.options.opacity;
+    this.ctx.fillStyle = '#000000';
+    this.ctx.strokeStyle = '#000000';
+    this.ctx.globalAlpha = Math.max(0.01, this.options.opacity);
+    this.ctx.lineWidth = this.options.size;
+    this.ctx.lineCap = 'round';
+    this.ctx.lineJoin = 'round';
+
     this.ctx.beginPath();
     this.ctx.arc(p.x, p.y, this.options.size / 2, 0, Math.PI * 2);
     this.ctx.fill();
+
+    if (prev && (prev.x !== p.x || prev.y !== p.y)) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(prev.x, prev.y);
+      this.ctx.lineTo(p.x, p.y);
+      this.ctx.stroke();
+    }
   }
 }

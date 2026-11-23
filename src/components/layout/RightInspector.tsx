@@ -9,6 +9,12 @@ import {
   Filter,
   Zap,
   Trash2,
+  Pen,
+  Pencil,
+  Highlighter,
+  SprayCan,
+  Paintbrush,
+  Eraser,
 } from 'lucide-react';
 import { BrushType, ToolType } from '../../types';
 
@@ -107,7 +113,7 @@ export const RightInspector: React.FC<RightInspectorProps> = ({
           <Sliders className="w-4 h-4 text-ps-accent" />
           <span>屬性控制項</span>
         </div>
-        {activeTool !== 'none' && activeTool !== 'brush' && activeTool !== 'eraser' && (
+        {activeTool !== 'none' && activeTool !== 'brush' && (
           <button
             onClick={onCancelTool}
             className="p-1 rounded hover:bg-ps-hover text-ps-text hover:text-ps-textBright transition-colors"
@@ -444,7 +450,7 @@ export const RightInspector: React.FC<RightInspectorProps> = ({
         )}
 
         {/* 7. 筆刷與橡皮擦控制項 */}
-        {(activeTool === 'brush' || activeTool === 'eraser') && (
+        {activeTool === 'brush' && (
           <div className="space-y-4">
             <div className="flex items-center space-x-2 text-sm font-semibold text-ps-textBright">
               <span className="w-2.5 h-2.5 rounded-full bg-ps-accent inline-block" />
@@ -456,25 +462,29 @@ export const RightInspector: React.FC<RightInspectorProps> = ({
               <label className="text-xs text-ps-text">筆觸類型</label>
               <div className="grid grid-cols-2 gap-1.5">
                 {[
-                  { type: 'pen', label: '鋼筆 (Pen)' },
-                  { type: 'crayon', label: '蠟筆 (Crayon)' },
-                  { type: 'highlighter', label: '螢光筆 (Highlight)' },
-                  { type: 'airbrush', label: '噴槍 (Airbrush)' },
-                  { type: 'watercolor', label: '水彩 (Watercolor)' },
-                  { type: 'eraser', label: '橡皮擦 (Eraser)' },
-                ].map((item) => (
-                  <button
-                    key={item.type}
-                    onClick={() => onBrushTypeChange(item.type as BrushType)}
-                    className={`py-1.5 px-2 text-xs rounded text-left truncate font-medium transition-all ${
-                      brushType === item.type
-                        ? 'bg-ps-accent text-white shadow'
-                        : 'bg-ps-canvas text-ps-text hover:bg-ps-hover border border-ps-border'
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
+                  { type: 'pen', label: '鋼筆', icon: Pen },
+                  { type: 'crayon', label: '蠟筆', icon: Pencil },
+                  { type: 'highlighter', label: '螢光筆', icon: Highlighter },
+                  { type: 'airbrush', label: '噴槍', icon: SprayCan },
+                  { type: 'watercolor', label: '水彩筆', icon: Paintbrush },
+                  { type: 'eraser', label: '橡皮擦', icon: Eraser },
+                ].map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.type}
+                      onClick={() => onBrushTypeChange(item.type as BrushType)}
+                      className={`py-1.5 px-2 text-xs rounded flex items-center space-x-1.5 font-medium transition-all ${
+                        brushType === item.type
+                          ? 'bg-ps-accent text-white shadow'
+                          : 'bg-ps-canvas text-ps-text hover:bg-ps-hover border border-ps-border'
+                      }`}
+                    >
+                      <Icon className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">{item.label}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

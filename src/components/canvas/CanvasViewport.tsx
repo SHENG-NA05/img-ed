@@ -19,6 +19,7 @@ interface CanvasViewportProps {
   onDrawingCommit: (drawingDataUrl: string) => void;
   onLoadSample: () => void;
   onImportFile: () => void;
+  onDropImage?: (dataUrl: string, fileName: string) => void;
   showDrawingLayer: boolean;
   drawingCanvasRef: React.RefObject<HTMLCanvasElement>;
   baseCanvasRef: React.RefObject<HTMLCanvasElement>;
@@ -40,6 +41,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
   onDrawingCommit,
   onLoadSample,
   onImportFile,
+  onDropImage,
   showDrawingLayer,
   drawingCanvasRef,
   baseCanvasRef,
@@ -82,7 +84,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
     if (!ctx) return;
 
     const options: BrushOptions = {
-      type: activeTool === 'eraser' ? 'eraser' : brushType,
+      type: brushType,
       size: brushSize,
       opacity: brushOpacity,
       color: brushColor,
@@ -91,9 +93,10 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
     if (!brushEngineRef.current) {
       brushEngineRef.current = new BrushEngine(ctx, options);
     } else {
+      brushEngineRef.current.setContext(ctx);
       brushEngineRef.current.updateOptions(options);
     }
-  }, [activeTool, brushType, brushSize, brushOpacity, brushColor, drawingCanvasRef]);
+  }, [baseImageData, activeTool, brushType, brushSize, brushOpacity, brushColor, drawingCanvasRef]);
 
   // Load and draw base image onto BaseCanvas
   useEffect(() => {
@@ -119,6 +122,9 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
         drawingCanvas.height = img.height;
         if (prevContent && dCtx) {
           dCtx.putImageData(prevContent, 0, 0);
+        }
+        if (dCtx && brushEngineRef.current) {
+          brushEngineRef.current.setContext(dCtx);
         }
       }
 
@@ -213,7 +219,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
       return;
     }
 
-    if (e.button === 0 && (activeTool === 'brush' || activeTool === 'eraser')) {
+    if (e.button === 0 && activeTool === 'brush') {
       const coords = clientToImageCoords(e.clientX, e.clientY);
       if (coords && brushEngineRef.current) {
         brushEngineRef.current.startStroke(coords);
@@ -233,7 +239,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
     const coords = clientToImageCoords(e.clientX, e.clientY);
     samplePixel(coords);
 
-    if (brushEngineRef.current && (activeTool === 'brush' || activeTool === 'eraser')) {
+    if (brushEngineRef.current && activeTool === 'brush') {
       if (coords) {
         brushEngineRef.current.continueStroke(coords);
       }
@@ -246,9 +252,9 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
       return;
     }
 
-    if (brushEngineRef.current) {
-      brushEngineRef.current.endStroke();
-      if (drawingCanvasRef.current) {
+    if (activeTool === 'brush' && brushEngineRef.current) {
+      const didDraw = brushEngineRef.current.endStroke();
+      if (didDraw && drawingCanvasRef.current) {
         onDrawingCommit(drawingCanvasRef.current.toDataURL('image/png'));
       }
     }
@@ -257,8 +263,11 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
   const handlePointerLeave = () => {
     onPixelHover(null);
     if (isPanning) setIsPanning(false);
-    if (brushEngineRef.current) {
-      brushEngineRef.current.endStroke();
+    if (activeTool === 'brush' && brushEngineRef.current) {
+      const didDraw = brushEngineRef.current.endStroke();
+      if (didDraw && drawingCanvasRef.current) {
+        onDrawingCommit(drawingCanvasRef.current.toDataURL('image/png'));
+      }
     }
   };
 
@@ -270,11 +279,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
       const reader = new FileReader();
       reader.onload = () => {
         if (typeof reader.result === 'string') {
-          // Trigger file load via click simulation or state callback
-          const img = new Image();
-          img.onload = () => {
-            onLoadSample(); // fallback or custom drop
-          };
+          onDropImage?.(reader.result, file.name);
         }
       };
       reader.readAsDataURL(file);
@@ -294,7 +299,7 @@ export const CanvasViewport: React.FC<CanvasViewportProps> = ({
       className={`flex-1 relative overflow-hidden bg-ps-canvas flex items-center justify-center select-none ${
         spacePressed || isPanning
           ? 'cursor-grab active:cursor-grabbing'
-          : activeTool === 'brush' || activeTool === 'eraser'
+          : activeTool === 'brush'
           ? 'cursor-crosshair'
           : 'cursor-default'
       }`}

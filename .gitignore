@@ -1,0 +1,29 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Build Outputs
+dist/
+dist-desktop/
+build/
+
+# Rust / Cargo
+**/target/
+**/*.rs.bk
+Cargo.lock
+
+# IDE / System
+.idea/
+.vscode/
+.codegraph/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local

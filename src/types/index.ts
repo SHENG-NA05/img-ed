@@ -54,3 +54,17 @@ export interface GifFrameItem {
   imageData: string;
   delayMs?: number;
 }
+
+export interface GifFrameInput {
+  id: string;
+  image_data: string;
+  delay_ms?: number;
+}
+
+export interface GifExportOptions {
+  frames: GifFrameInput[];
+  global_delay_ms: number;
+  speed_multiplier: number;
+  loop_count: number;
+  scale: number;
+}

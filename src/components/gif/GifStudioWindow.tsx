@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { listen } from '@tauri-apps/api/event';
 import {
   Play,
   Pause,
@@ -12,10 +13,11 @@ import {
   Film,
   Sparkles,
 } from 'lucide-react';
-import { GifFrameItem } from '../../types';
+import { GifExportOptions, GifFrameInput, GifFrameItem } from '../../types';
 import {
   invokeExportGif,
   invokeGetSharedGifFrames,
+  isTauri,
   pickMultipleImageFiles,
   pickSavePath,
 } from '../../utils/tauriBridge';
@@ -52,7 +54,7 @@ export const GifStudioWindow: React.FC<GifStudioWindowProps> = ({
       try {
         const shared = await invokeGetSharedGifFrames();
         if (shared && shared.length > 0) {
-          const mapped: GifFrameItem[] = shared.map((f: any, idx: number) => ({
+          const mapped: GifFrameItem[] = shared.map((f: GifFrameInput, idx: number) => ({
             id: f.id || `frame-${Date.now()}-${idx}`,
             imageData: f.image_data,
             delayMs: f.delay_ms,
@@ -70,6 +72,36 @@ export const GifStudioWindow: React.FC<GifStudioWindowProps> = ({
       fetchShared();
     }
   }, [propFrames]);
+
+  // Listen for gif_frame_added event dispatched from main window via Rust
+  useEffect(() => {
+    let unlisten: (() => void) | undefined;
+    if (isTauri()) {
+      const setupListener = async () => {
+        try {
+          unlisten = await listen<GifFrameInput>('gif_frame_added', (event) => {
+            const payload = event.payload;
+            if (payload && payload.image_data) {
+              setFrames((prev) => [
+                ...prev,
+                {
+                  id: payload.id || `frame-${Date.now()}`,
+                  imageData: payload.image_data,
+                  delayMs: payload.delay_ms,
+                },
+              ]);
+            }
+          });
+        } catch (err) {
+          console.error('註冊 gif_frame_added 事件監聽失敗', err);
+        }
+      };
+      setupListener();
+    }
+    return () => {
+      if (unlisten) unlisten();
+    };
+  }, []);
 
   // Dynamic looping preview engine
   useEffect(() => {
@@ -204,7 +236,7 @@ export const GifStudioWindow: React.FC<GifStudioWindowProps> = ({
         return;
       }
 
-      const options = {
+      const options: GifExportOptions = {
         frames: frames.map((f) => ({
           id: f.id,
           image_data: f.imageData,
@@ -218,8 +250,9 @@ export const GifStudioWindow: React.FC<GifStudioWindowProps> = ({
 
       const result = await invokeExportGif(options, savePath);
       setExportMessage(result);
-    } catch (err: any) {
-      setExportMessage(`匯出失敗: ${err?.message || err}`);
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      setExportMessage(`匯出失敗: ${errMsg}`);
     } finally {
       setIsExporting(false);
     }

@@ -9,7 +9,6 @@ import {
   Filter,
   Zap,
   Brush,
-  Eraser,
   Film,
 } from 'lucide-react';
 import { ToolType } from '../../types';
@@ -110,7 +109,6 @@ export const LeftToolDock: React.FC<LeftToolDockProps> = ({
         </div>
         <div className="space-y-1">
           {toolButton('brush', '筆刷', <Brush className="w-5 h-5" />)}
-          {toolButton('eraser', '橡皮擦', <Eraser className="w-5 h-5" />)}
         </div>
       </div>
 

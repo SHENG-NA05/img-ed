@@ -1,6 +1,7 @@
 use base64::{engine::general_purpose::STANDARD as BASE64, Engine as _};
 use color_quant::NeuQuant;
-use image::{DynamicImage, GenericImageView, ImageBuffer, ImageFormat, Rgba};
+use image::codecs::png::PngEncoder;
+use image::{DynamicImage, ExtendedColorType, GenericImageView, ImageBuffer, ImageEncoder, ImageFormat, Rgba};
 use serde::{Deserialize, Serialize};
 use std::io::Cursor;
 
@@ -43,9 +44,21 @@ pub fn encode_image_png(img: &DynamicImage) -> Result<String, String> {
     Ok(format!("data:image/png;base64,{}", b64))
 }
 
-/// Helper to encode RgbaImage into a PNG base64 data URL
+/// Helper to encode RgbaImage into a PNG base64 data URL without cloning the pixel buffer
 pub fn encode_rgba_png(img: &ImageBuffer<Rgba<u8>, Vec<u8>>) -> Result<String, String> {
-    encode_image_png(&DynamicImage::ImageRgba8(img.clone()))
+    let mut buffer = Vec::new();
+    let encoder = PngEncoder::new(&mut buffer);
+    encoder
+        .write_image(
+            img.as_raw(),
+            img.width(),
+            img.height(),
+            ExtendedColorType::Rgba8,
+        )
+        .map_err(|e| format!("影像 PNG 編碼失敗: {}", e))?;
+
+    let b64 = BASE64.encode(&buffer);
+    Ok(format!("data:image/png;base64,{}", b64))
 }
 
 /// Grayscale conversion using luminance formula: Y = 0.299*R + 0.587*G + 0.114*B
@@ -203,7 +216,7 @@ pub fn to_negative(img: &DynamicImage) -> Result<String, String> {
 
 /// Spatial Domain Median Filter: kernel sizes 3, 5, 7
 pub fn median_filter(img: &DynamicImage, kernel_size: usize) -> Result<String, String> {
-    let k = kernel_size.clamp(3, 7);
+    let k = (kernel_size.clamp(3, 7) / 2) * 2 + 1;
     let radius = (k / 2) as i32;
     let rgba = img.to_rgba8();
     let (width, height) = rgba.dimensions();
@@ -212,6 +225,7 @@ pub fn median_filter(img: &DynamicImage, kernel_size: usize) -> Result<String, S
     let mut r_vals = Vec::with_capacity(k * k);
     let mut g_vals = Vec::with_capacity(k * k);
     let mut b_vals = Vec::with_capacity(k * k);
+    let mid = (k * k) / 2;
 
     for y in 0..height {
         for x in 0..width {
@@ -230,11 +244,10 @@ pub fn median_filter(img: &DynamicImage, kernel_size: usize) -> Result<String, S
                 }
             }
 
-            r_vals.sort_unstable();
-            g_vals.sort_unstable();
-            b_vals.sort_unstable();
+            r_vals.select_nth_unstable(mid);
+            g_vals.select_nth_unstable(mid);
+            b_vals.select_nth_unstable(mid);
 
-            let mid = r_vals.len() / 2;
             let a = rgba.get_pixel(x, y)[3];
             out_img.put_pixel(x, y, Rgba([r_vals[mid], g_vals[mid], b_vals[mid], a]));
         }
@@ -281,9 +294,8 @@ pub fn laplacian_filter(
             let mut sum_g = 0.0f32;
             let mut sum_b = 0.0f32;
 
-            for ky in 0..3 {
-                for kx in 0..3 {
-                    let weight = kernel[ky][kx];
+            for (ky, krow) in kernel.iter().enumerate() {
+                for (kx, &weight) in krow.iter().enumerate() {
                     if weight == 0.0 {
                         continue;
                     }

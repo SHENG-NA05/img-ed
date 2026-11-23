@@ -24,33 +24,20 @@ pub fn create_gif_bytes(options: &GifExportOptions) -> Result<Vec<u8>, String> {
         return Err("影格清單不可為空".to_string());
     }
 
-    // Decode all frames first to determine target resolution
-    let mut decoded_images = Vec::with_capacity(options.frames.len());
-    let mut delays = Vec::with_capacity(options.frames.len());
-
     let speed = if options.speed_multiplier > 0.0 {
         options.speed_multiplier
     } else {
         1.0
     };
 
-    for frame_input in &options.frames {
-        let dyn_img = decode_image(&frame_input.image_data)?;
-        decoded_images.push(dyn_img);
-
-        let delay_ms = frame_input.delay_ms.unwrap_or(options.global_delay_ms);
-        // Effective delay in 10ms (1/100s) ticks
-        let adjusted_delay = (delay_ms as f32 / speed / 10.0).round().max(1.0) as u16;
-        delays.push(adjusted_delay);
-    }
-
-    // Target dimensions based on first frame and scale
-    let first = &decoded_images[0];
-    let orig_w = first.width();
-    let orig_h = first.height();
+    // Determine target dimensions from the first frame and scale, then immediately release it
     let scale = options.scale.clamp(0.1, 2.0);
-    let target_w = ((orig_w as f32 * scale).round() as u32).max(1);
-    let target_h = ((orig_h as f32 * scale).round() as u32).max(1);
+    let (target_w, target_h) = {
+        let first_img = decode_image(&options.frames[0].image_data)?;
+        let tw = ((first_img.width() as f32 * scale).round() as u32).max(1);
+        let th = ((first_img.height() as f32 * scale).round() as u32).max(1);
+        (tw, th)
+    };
 
     let mut gif_buffer = Vec::new();
     {
@@ -67,16 +54,21 @@ pub fn create_gif_bytes(options: &GifExportOptions) -> Result<Vec<u8>, String> {
                 .map_err(|e| format!("設定循環次數失敗: {}", e))?;
         }
 
-        for (i, img) in decoded_images.iter().enumerate() {
-            let resized = if img.width() != target_w || img.height() != target_h {
-                img.resize_exact(target_w, target_h, FilterType::Triangle)
+        // Stream encode: decode single frame -> resize -> encode -> drop immediately
+        for (i, frame_input) in options.frames.iter().enumerate() {
+            let dyn_img = decode_image(&frame_input.image_data)?;
+            let resized = if dyn_img.width() != target_w || dyn_img.height() != target_h {
+                dyn_img.resize_exact(target_w, target_h, FilterType::Triangle)
             } else {
-                img.clone()
+                dyn_img
             };
+
+            let delay_ms = frame_input.delay_ms.unwrap_or(options.global_delay_ms);
+            let adjusted_delay = (delay_ms as f32 / speed / 10.0).round().max(1.0) as u16;
 
             let mut rgba = resized.to_rgba8().into_raw();
             let mut frame = Frame::from_rgba_speed(target_w as u16, target_h as u16, &mut rgba, 10);
-            frame.delay = delays[i];
+            frame.delay = adjusted_delay;
 
             encoder
                 .write_frame(&frame)

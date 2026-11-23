@@ -39,6 +39,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
   canUndo,
   canRedo,
   onUndo,
+  onRedo,
   onResetOriginal,
   zoom,
   onZoomIn,
@@ -126,7 +127,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
           </button>
 
           <button
-            onClick={onUndo}
+            onClick={onRedo}
             disabled={!canRedo}
             title="重做 (Ctrl+Y)"
             className={`p-1.5 rounded hover:bg-ps-hover transition-colors ${

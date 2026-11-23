@@ -63,6 +63,8 @@ export const App: React.FC = () => {
   const [laplacianKernelType, setLaplacianKernelType] = useState<string>('8');
   const [laplacianStrength, setLaplacianStrength] = useState<number>(1.0);
   const [laplacianMode, setLaplacianMode] = useState<LaplacianViewMode>('sharpened');
+  const laplacianModeRef = useRef<LaplacianViewMode>(laplacianMode);
+  laplacianModeRef.current = laplacianMode;
   const [laplacianCache, setLaplacianCache] = useState<LaplacianResult | null>(null);
 
   // Viewport navigation
@@ -242,8 +244,12 @@ export const App: React.FC = () => {
         handleRedo();
       } else if (e.key.toLowerCase() === 'b') {
         setActiveTool('brush');
+        if (brushType === 'eraser') {
+          setBrushType('pen');
+        }
       } else if (e.key.toLowerCase() === 'e') {
-        setActiveTool('eraser');
+        setActiveTool('brush');
+        setBrushType('eraser');
       }
     };
 
@@ -251,91 +257,72 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleUndo, handleRedo]);
 
-  // Tool Selection
-  const handleSelectTool = async (tool: ToolType) => {
+  // Tool Selection (Eliminates redundant double IPC invocation)
+  const handleSelectTool = (tool: ToolType) => {
     setActiveTool(tool);
-
-    if (!baseImageData) return;
-
-    if (tool === 'grayscale') {
-      try {
-        const preview = await invokeGrayscale(baseImageData);
-        setPreviewImageData(preview);
-      } catch (err) {
-        console.error(err);
-      }
-    } else if (tool === 'binary') {
-      try {
-        const preview = await invokeBinary(baseImageData, binaryThreshold);
-        setPreviewImageData(preview);
-      } catch (err) {
-        console.error(err);
-      }
-    } else if (tool === 'palette') {
-      try {
-        const result = await invokePalette(baseImageData, paletteCount, paletteDither);
-        setPreviewImageData(result.image_data);
-        setExtractedPalette(result.palette);
-      } catch (err) {
-        console.error(err);
-      }
-    } else if (tool === 'negative') {
-      try {
-        const preview = await invokeNegative(baseImageData);
-        setPreviewImageData(preview);
-      } catch (err) {
-        console.error(err);
-      }
-    } else if (tool === 'median') {
-      try {
-        const preview = await invokeMedian(baseImageData, medianKernel);
-        setPreviewImageData(preview);
-      } catch (err) {
-        console.error(err);
-      }
-    } else if (tool === 'laplacian') {
-      try {
-        const result = await invokeLaplacian(
-          baseImageData,
-          laplacianKernelType,
-          laplacianStrength
-        );
-        setLaplacianCache(result);
-        setLaplacianMode('sharpened');
-        setPreviewImageData(result.sharpened_data);
-      } catch (err) {
-        console.error(err);
-      }
-    } else {
-      setPreviewImageData(null);
+    if (tool === 'laplacian') {
+      setLaplacianMode('sharpened');
     }
   };
 
-  // Re-compute preview when parameters change
+  // Single-source preview computation with async race-condition cancellation
   useEffect(() => {
     if (!baseImageData) return;
+    let isCancelled = false;
 
-    if (activeTool === 'binary') {
-      invokeBinary(baseImageData, binaryThreshold).then(setPreviewImageData).catch(console.error);
+    if (activeTool === 'grayscale') {
+      invokeGrayscale(baseImageData)
+        .then((preview) => {
+          if (!isCancelled) setPreviewImageData(preview);
+        })
+        .catch(console.error);
+    } else if (activeTool === 'binary') {
+      invokeBinary(baseImageData, binaryThreshold)
+        .then((preview) => {
+          if (!isCancelled) setPreviewImageData(preview);
+        })
+        .catch(console.error);
     } else if (activeTool === 'palette') {
       invokePalette(baseImageData, paletteCount, paletteDither)
         .then((res) => {
-          setPreviewImageData(res.image_data);
-          setExtractedPalette(res.palette);
+          if (!isCancelled) {
+            setPreviewImageData(res.image_data);
+            setExtractedPalette(res.palette);
+          }
+        })
+        .catch(console.error);
+    } else if (activeTool === 'negative') {
+      invokeNegative(baseImageData)
+        .then((preview) => {
+          if (!isCancelled) setPreviewImageData(preview);
         })
         .catch(console.error);
     } else if (activeTool === 'median') {
-      invokeMedian(baseImageData, medianKernel).then(setPreviewImageData).catch(console.error);
+      invokeMedian(baseImageData, medianKernel)
+        .then((preview) => {
+          if (!isCancelled) setPreviewImageData(preview);
+        })
+        .catch(console.error);
     } else if (activeTool === 'laplacian') {
       invokeLaplacian(baseImageData, laplacianKernelType, laplacianStrength)
         .then((res) => {
-          setLaplacianCache(res);
-          if (laplacianMode === 'original') setPreviewImageData(res.original_data);
-          else if (laplacianMode === 'mask') setPreviewImageData(res.mask_data);
-          else setPreviewImageData(res.sharpened_data);
+          if (!isCancelled) {
+            setLaplacianCache(res);
+            const currentMode = laplacianModeRef.current;
+            if (currentMode === 'original') setPreviewImageData(res.original_data);
+            else if (currentMode === 'mask') setPreviewImageData(res.mask_data);
+            else setPreviewImageData(res.sharpened_data);
+          }
         })
         .catch(console.error);
+    } else {
+      setPreviewImageData(null);
+      setLaplacianCache(null);
     }
+
+    return () => {
+      isCancelled = true;
+    };
   }, [
     activeTool,
     binaryThreshold,
@@ -345,7 +332,6 @@ export const App: React.FC = () => {
     laplacianKernelType,
     laplacianStrength,
     baseImageData,
-    laplacianMode,
   ]);
 
   // Switch Laplacian mode (original | mask | sharpened)
@@ -535,6 +521,7 @@ export const App: React.FC = () => {
           onDrawingCommit={handleDrawingCommit}
           onLoadSample={() => loadImageData(createSampleTestImage(), '高解析測試圖卡.png')}
           onImportFile={handleImport}
+          onDropImage={(data, name) => loadImageData(data, name)}
           showDrawingLayer={showDrawingLayer}
           drawingCanvasRef={drawingCanvasRef}
           baseCanvasRef={baseCanvasRef}

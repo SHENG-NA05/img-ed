@@ -1,6 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import { open, save } from '@tauri-apps/plugin-dialog';
-import { LaplacianResult, PaletteResult } from '../types';
+import { GifExportOptions, GifFrameInput, LaplacianResult, PaletteResult } from '../types';
 
 export const isTauri = () => {
   return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
@@ -92,20 +92,16 @@ export async function invokeLaplacian(
   };
 }
 
-export async function invokeAddSharedGifFrame(frame: {
-  id: string;
-  image_data: string;
-  delay_ms?: number;
-}): Promise<number> {
+export async function invokeAddSharedGifFrame(frame: GifFrameInput): Promise<number> {
   if (isTauri()) {
     return await invoke<number>('add_shared_gif_frame', { frame });
   }
   return 1;
 }
 
-export async function invokeGetSharedGifFrames(): Promise<any[]> {
+export async function invokeGetSharedGifFrames(): Promise<GifFrameInput[]> {
   if (isTauri()) {
-    return await invoke<any[]>('get_shared_gif_frames');
+    return await invoke<GifFrameInput[]>('get_shared_gif_frames');
   }
   return [];
 }
@@ -116,7 +112,10 @@ export async function invokeClearSharedGifFrames(): Promise<void> {
   }
 }
 
-export async function invokeExportGif(options: any, filePath: string): Promise<string> {
+export async function invokeExportGif(
+  options: GifExportOptions,
+  filePath: string
+): Promise<string> {
   if (isTauri()) {
     return await invoke<string>('export_gif', { options, filePath });
   }
