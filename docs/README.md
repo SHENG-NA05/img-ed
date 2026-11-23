@@ -11,19 +11,40 @@ docs/
 ├── README.md                           # 本指引說明文件
 ├── UML架構規格書.md                    # 完整 UML 模型規格書 (含系統分析、Mermaid 內嵌圖與對照表)
 │
-├── plantuml/                           # PlantUML 格式圖檔原始碼 (*.puml)
-│   ├── use_case_diagram.puml          # 使用者案例圖 (Use Case Diagram)
-│   ├── class_diagram.puml             # 系統類別圖 (Class Diagram)
-│   ├── sequence_diagram_filter.puml   # 循序圖一：影像濾鏡非同步運算與套用流程
-│   ├── sequence_diagram_drawing.puml  # 循序圖二：雙圖層筆刷塗鴉與 Undo/Redo 歷史管理
-│   └── sequence_diagram_gif.puml      # 循序圖三：GIF 工作坊畫布擷取與跨視窗匯出
+├── 使用者案例.svg                      # 最新版使用者案例圖 (Level-1 全景圖，高清向量)
+├── 類別圖.svg                          # 最新版系統類別圖 (含最新型別欄位，高清向量)
+├── 循序圖.svg                          # 循序圖總覽 (情境一：濾鏡非同步計算)
+├── 循序圖-情境1_濾鏡預覽與套用.svg     # 循序圖一：影像濾鏡非同步計算與套用流程
+├── 循序圖-情境2_筆刷塗鴉與復原重做.svg # 循序圖二：雙圖層筆刷塗鴉與 Undo/Redo 歷史管理
+├── 循序圖-情境3_GIF擷取與串流匯出.svg  # 循序圖三：GIF 工作坊畫布擷取與跨視窗匯出
+│
+├── 使用者案例圖/                       # 使用者案例分層高清向量圖 (Level-1 + Level-2)
+│   ├── 使用者案例-level_1.svg          # 系統全景總覽圖 (5 大核心模組)
+│   ├── 使用者案例-level_2-1.svg        # 子系統一：空間域與色調濾鏡管線
+│   ├── 使用者案例-level_2-2.svg        # 子系統二：雙圖層繪圖塗鴉與歷史狀態
+│   └── 使用者案例-level_2-3.svg        # 子系統三：GIF 動畫製作工作坊
+│
+├── plantuml/                           # PlantUML 格式圖檔原始碼 (*.puml) 與 SVG 匯出
+│   ├── use_case_diagram.puml          # 使用者案例圖原始碼
+│   ├── use_case_diagram.svg           # 使用者案例圖 PlantUML 向量圖
+│   ├── class_diagram.puml             # 系統類別圖原始碼
+│   ├── class_diagram.svg              # 系統類別圖 PlantUML 向量圖
+│   ├── sequence_diagram_filter.puml   # 循序圖一原始碼
+│   ├── sequence_diagram_filter.svg    # 循序圖一 PlantUML 向量圖
+│   ├── sequence_diagram_drawing.puml  # 循序圖二原始碼
+│   ├── sequence_diagram_drawing.svg   # 循序圖二 PlantUML 向量圖
+│   ├── sequence_diagram_gif.puml      # 循序圖三原始碼
+│   └── sequence_diagram_gif.svg       # 循序圖三 PlantUML 向量圖
 │
 └── mermaid/                            # Mermaid 格式圖檔原始碼 (*.mmd)
-    ├── use_case_diagram.mmd           # 使用者案例圖
+    ├── use_case_diagram.mmd           # 使用者案例圖 (系統全景總覽)
+    ├── use_case_subsystem_filter.mmd  # 使用者案例細部圖：濾鏡處理管線
+    ├── use_case_subsystem_drawing.mmd # 使用者案例細部圖：雙圖層繪圖與歷史
+    ├── use_case_subsystem_gif.mmd     # 使用者案例細部圖：GIF 工作坊
     ├── class_diagram.mmd              # 系統類別圖
-    ├── sequence_diagram_filter.mmd    # 循序圖一
-    ├── sequence_diagram_drawing.mmd   # 循序圖二
-    └── sequence_diagram_gif.mmd       # 循序圖三
+    ├── sequence_diagram_filter.mmd    # 循序圖一：濾鏡計算
+    ├── sequence_diagram_drawing.mmd   # 循序圖二：筆刷與歷史
+    └── sequence_diagram_gif.mmd       # 循序圖三：GIF 匯出
 ```
 
 ---

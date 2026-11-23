@@ -20,7 +20,7 @@ sequenceDiagram
         RustCore-->>TauriCmd: DynamicImage 實例
         TauriCmd->>RustCore: to_binary(&img, 180)
         note over RustCore: 遍歷像素矩陣計算亮度 Y >= 180 ? 255 : 0<br/>使用 encode_rgba_png 零拷貝編碼
-        RustCore-->>TauriCmd: 回傳 DataURL (data:image/png;base64,...)
+        RustCore-->>TauriCmd: 回傳 DataURL Base64 字串
         TauriCmd-->>Bridge: IPC 回傳 Base64 結果字串
         Bridge-->>App: Promise.resolve(previewUrl)
         

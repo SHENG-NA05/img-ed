@@ -63,7 +63,7 @@ activate TauriCore
 
 TauriCore -> GifOps : create_gif_bytes(&options)
 activate GifOps
-note over GifOps : 1. 計算目標尺寸 (crop / min_fit)\n2. 串流編碼 Frame (NeuQuant + 延遲)\n3. 設定循環次數 Repeat::Infinite
+note over GifOps : 1. 依首格比例計算目標尺寸 (target_w, target_h)\n2. 串流逐格自適應 resize 並編碼 (NeuQuant + 延遲)\n3. 設定循環次數 Repeat::Infinite
 GifOps --> TauriCore : 回傳 Vec<u8> 二進位位元組
 deactivate GifOps
 

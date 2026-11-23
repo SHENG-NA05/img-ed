@@ -169,6 +169,14 @@ package "前端引擎與資料型別 (TypeScript Engine & Types)" {
         + delayMs: int
     }
 
+    class GifExportOptions {
+        + frames: List<GifFrameInput>
+        + global_delay_ms: int
+        + speed_multiplier: float
+        + loop_count: int
+        + scale: float
+    }
+
     class TauriBridge <<module>> {
         + invokeGrayscale(imageData): Promise<string>
         + invokeBinary(imageData, threshold): Promise<string>

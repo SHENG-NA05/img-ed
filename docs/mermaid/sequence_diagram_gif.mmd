@@ -44,7 +44,7 @@ sequenceDiagram
     Bridge->>TauriCore: invoke("export_gif", { options, file_path })
     
     TauriCore->>GifOps: create_gif_bytes(&options)
-    note over GifOps: 1. 計算目標尺寸 (crop / min_fit)<br/>2. 串流編碼 Frame (包含 NeuQuant 局部量化與延遲)<br/>3. 設定重複循環次數 Repeat::Infinite
+    note over GifOps: 1. 依首格比例計算目標尺寸 (target_w, target_h)<br/>2. 串流逐格自適應 resize 並編碼 (NeuQuant + 延遲)<br/>3. 設定重複循環次數 Repeat::Infinite
     GifOps-->>TauriCore: 回傳完整 GIF 二進位位元組 (Vec<u8>)
     
     TauriCore->>OS: std::fs::write(&file_path, bytes)

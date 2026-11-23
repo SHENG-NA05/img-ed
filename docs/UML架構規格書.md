@@ -417,9 +417,9 @@ classDiagram
     class GifExportOptions {
         +GifFrameInput[] frames
         +number global_delay_ms
+        +number speed_multiplier
         +number loop_count
         +number scale
-        +string resize_mode
     }
 
     class TauriBridge {
@@ -541,7 +541,7 @@ sequenceDiagram
         RustCore-->>TauriCmd: DynamicImage 實例
         TauriCmd->>RustCore: to_binary(&img, 180)
         note over RustCore: 遍歷像素矩陣計算亮度 Y >= 180 ? 255 : 0<br/>使用 encode_rgba_png 零拷貝編碼
-        RustCore-->>TauriCmd: 回傳 DataURL (data:image/png;base64,...)
+        RustCore-->>TauriCmd: 回傳 DataURL Base64 字串
         TauriCmd-->>Bridge: IPC 回傳 Base64 結果字串
         Bridge-->>App: Promise.resolve(previewUrl)
         
@@ -671,7 +671,7 @@ sequenceDiagram
     Bridge->>TauriCore: invoke("export_gif", { options, file_path })
     
     TauriCore->>GifOps: create_gif_bytes(&options)
-    note over GifOps: 1. 計算目標尺寸 (crop / min_fit)<br/>2. 串流編碼 Frame (包含 NeuQuant 局部量化與延遲)<br/>3. 設定重複循環次數 Repeat::Infinite
+    note over GifOps: 1. 依首格比例計算目標尺寸 (target_w, target_h)<br/>2. 串流逐格自適應 resize 並編碼 (NeuQuant + 延遲)<br/>3. 設定重複循環次數 Repeat::Infinite
     GifOps-->>TauriCore: 回傳完整 GIF 二進位位元組 (Vec<u8>)
     
     TauriCore->>OS: std::fs::write(&file_path, bytes)
@@ -693,4 +693,4 @@ sequenceDiagram
 | **非同步防競態預覽** | `src/App.tsx` (L281-L341) | `useEffect` 內部配置 `isCancelled` 清理旗標，徹底消除滑動參數時的非同步 Race Condition。 |
 | **高效能空間域與銳化** | `src-tauri/src/image_ops.rs` | 以純 Rust 實作 4-鄰域與 8-鄰域拉普拉斯矩陣微分、奇數窗口中值濾波與 `NeuQuant` 調色盤量化。 |
 | **跨視窗影格廣播** | `src-tauri/src/lib.rs` 與 `src/components/gif/GifStudioWindow.tsx` | 透過 `app_handle.emit("gif_frame_added")` 實現 Tauri 多視窗 IPC 雙向同步。 |
-| **零拷貝串流 GIF 編碼** | `src-tauri/src/gif_ops.rs` | 支援 `min_fit` 最小邊長自適應與串流式 `gif::Encoder`，避免多影格匯出時記憶體爆增。 |
+| **零拷貝串流 GIF 編碼** | `src-tauri/src/gif_ops.rs` | 支援依首格尺寸自動縮放自適應與串流式 `gif::Encoder`，避免多影格匯出時記憶體爆增。 |
