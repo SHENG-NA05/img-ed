@@ -1,0 +1,72 @@
+@startuml
+title 情境二：雙圖層筆刷塗鴉繪製與歷史堆疊復原/重做流程
+autonumber
+skinparam responseMessageBelowArrow true
+
+actor "使用者" as User
+participant "CanvasViewport" as Viewport
+participant "BrushEngine" as Engine
+participant "DrawingCanvas\n(塗鴉層)" as DrawingCanvas
+participant "App 控制器" as App
+participant "歷史堆疊\n(Unified History)" as History
+
+User -> Viewport : 滑鼠於畫布按下 (MouseDown at P1)
+activate Viewport
+Viewport -> Engine : startStroke(P1)
+activate Engine
+Engine -> DrawingCanvas : renderStroke(P1, P1)
+activate DrawingCanvas
+deactivate DrawingCanvas
+deactivate Engine
+
+loop 滑鼠持續拖曳移動 (MouseMove)
+    User -> Viewport : 滑鼠移動至 P2
+    Viewport -> Engine : continueStroke(P2)
+    activate Engine
+    alt 筆刷類型為橡皮擦 (Eraser)
+        Engine -> DrawingCanvas : globalCompositeOperation = "destination-out"
+        Engine -> DrawingCanvas : 擦除塗鴉筆跡 (不損及底圖)
+    else 筆刷類型為鋼筆 / 蠟筆 / 噴槍
+        Engine -> DrawingCanvas : 渲染平滑插值筆跡
+    end
+    deactivate Engine
+    Viewport -> App : onPixelHover(取樣合成畫面座標與色碼)
+end
+
+User -> Viewport : 釋放滑鼠按鈕 (MouseUp)
+Viewport -> Engine : endStroke()
+activate Engine
+Engine --> Viewport : 回傳 drewSomething = true
+deactivate Engine
+Viewport -> DrawingCanvas : toDataURL("image/png")
+activate DrawingCanvas
+DrawingCanvas --> Viewport : 取得塗鴉層 DataURL
+deactivate DrawingCanvas
+
+Viewport -> App : onDrawingCommit(drawingDataUrl)
+activate App
+App -> History : pushHistory("繪製筆刷塗鴉", currentBase, drawingDataUrl)
+activate History
+note over History : 歷史指標 index 推進至新步驟 (最多 30 階)
+deactivate History
+deactivate App
+deactivate Viewport
+
+group 復原流程 (Undo Workflow)
+    User -> App : 按下鍵盤快捷鍵 Ctrl + Z
+    activate App
+    App -> App : handleUndo()
+    App -> History : 讀取 history[index - 1]
+    activate History
+    History --> App : 回傳前一步驟快照 (prevBase, prevDrawing)
+    deactivate History
+    App -> App : setBaseImageData(prevBase)
+    App -> DrawingCanvas : clearRect(0, 0, width, height)
+    activate DrawingCanvas
+    App -> DrawingCanvas : drawImage(prevDrawing)
+    deactivate DrawingCanvas
+    App -> App : setHistoryIndex(index - 1)
+    deactivate App
+end
+
+@enduml

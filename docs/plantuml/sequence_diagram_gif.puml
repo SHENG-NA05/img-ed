@@ -1,0 +1,82 @@
+@startuml
+title 情境三：GIF 動畫工作坊之畫布擷取、多視窗 IPC 廣播與匯出流程
+autonumber
+skinparam responseMessageBelowArrow true
+
+actor "使用者" as User
+participant "主視窗 (App)" as MainWin
+participant "TauriBridge" as Bridge
+participant "Tauri 後端核心\n(lib.rs)" as TauriCore
+participant "AppState\n(Mutex)" as State
+participant "GIF 工作坊視窗\n(GifStudioWindow)" as GifWin
+participant "gif_ops\n(動畫編碼器)" as GifOps
+participant "作業系統檔案系統" as OS
+
+User -> MainWin : 點擊「擷取目前畫布為 GIF 影格」
+activate MainWin
+MainWin -> MainWin : getMergedCompositeDataUrl()\n合成 BaseCanvas 與 DrawingCanvas
+MainWin -> Bridge : invokeAddSharedGifFrame(frameItem)
+activate Bridge
+Bridge -> TauriCore : invoke("add_shared_gif_frame", { frame })
+activate TauriCore
+
+TauriCore -> State : inner.lock().shared_frames.push(frame)
+activate State
+deactivate State
+
+TauriCore -> TauriCore : app_handle.emit("gif_frame_added", &frame)
+note over TauriCore : 向所有 Webview 廣播影格新增事件
+
+TauriCore --> Bridge : 回傳目前影格總數
+deactivate TauriCore
+Bridge --> MainWin : Promise.resolve(count)
+deactivate Bridge
+
+MainWin -> Bridge : invokeOpenGifStudio()
+activate Bridge
+Bridge -> TauriCore : invoke("open_gif_studio_window")
+activate TauriCore
+TauriCore -> GifWin : 顯示並聚焦獨立工作坊視窗
+deactivate TauriCore
+deactivate Bridge
+deactivate MainWin
+
+activate GifWin
+GifWin -> GifWin : 收到 "gif_frame_added" 事件監聽回呼
+GifWin -> GifWin : setFrames(prev => [...prev, newFrame])
+note over GifWin : 時間軸即時加入新縮圖，預覽動態循環播放
+
+User -> GifWin : 調整時間軸次序、設定延遲 120ms\n點擊「匯出動態 GIF」按鈕
+GifWin -> Bridge : pickSavePath("animation.gif", ...)
+activate Bridge
+Bridge -> OS : 開啟儲存檔案對話框
+activate OS
+OS --> Bridge : 回傳選定路徑 "C:/Images/output.gif"
+deactivate OS
+Bridge --> GifWin : savePath
+deactivate Bridge
+
+GifWin -> Bridge : invokeExportGif(options, savePath)
+activate Bridge
+Bridge -> TauriCore : invoke("export_gif", { options, file_path })
+activate TauriCore
+
+TauriCore -> GifOps : create_gif_bytes(&options)
+activate GifOps
+note over GifOps : 1. 計算目標尺寸 (crop / min_fit)\n2. 串流編碼 Frame (NeuQuant + 延遲)\n3. 設定循環次數 Repeat::Infinite
+GifOps --> TauriCore : 回傳 Vec<u8> 二進位位元組
+deactivate GifOps
+
+TauriCore -> OS : std::fs::write(&file_path, bytes)
+activate OS
+OS --> TauriCore : 寫入成功
+deactivate OS
+TauriCore --> Bridge : Ok("成功匯出 GIF")
+deactivate TauriCore
+Bridge --> GifWin : 匯出完成回傳
+deactivate Bridge
+
+GifWin -> User : 顯示綠色成功通知徽章
+deactivate GifWin
+
+@enduml

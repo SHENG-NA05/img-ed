@@ -1,0 +1,65 @@
+@startuml
+title 情境一：影像濾鏡非同步計算與預覽套用流程 (含競態條件防護)
+autonumber
+skinparam responseMessageBelowArrow true
+
+actor "使用者" as User
+participant "RightInspector" as Inspector
+participant "App 控制核心" as App
+participant "TauriBridge" as Bridge
+participant "TauriCommand\n(lib.rs)" as TauriCmd
+participant "image_ops\n(Rust 核心)" as RustCore
+participant "CanvasViewport\n(BaseCanvas)" as Viewport
+
+User -> Inspector : 拖動二值化閾值滑桿 (Threshold = 180)
+activate Inspector
+Inspector -> App : onBinaryThresholdChange(180)
+activate App
+
+group 非同步防護與 IPC 呼叫
+    note over App : 建立非同步取消旗標 (isCancelled = false)
+    App -> Bridge : invokeBinary(baseImageData, 180)
+    activate Bridge
+    Bridge -> TauriCmd : invoke("process_binary", { image_data, threshold: 180 })
+    activate TauriCmd
+    
+    TauriCmd -> RustCore : decode_image(&image_data)
+    activate RustCore
+    RustCore --> TauriCmd : DynamicImage 實例
+    deactivate RustCore
+    
+    TauriCmd -> RustCore : to_binary(&img, 180)
+    activate RustCore
+    note over RustCore : 遍歷像素矩陣計算亮度 Y >= 180 ? 255 : 0\n使用 encode_rgba_png 零拷貝編碼
+    RustCore --> TauriCmd : 回傳 DataURL (Base64)
+    deactivate RustCore
+    
+    TauriCmd --> Bridge : IPC 回傳 Base64 結果字串
+    deactivate TauriCmd
+    Bridge --> App : Promise.resolve(previewUrl)
+    deactivate Bridge
+    
+    opt 驗證取消旗標 (isCancelled == false)
+        App -> App : setPreviewImageData(previewUrl)
+        App -> Viewport : 傳遞 previewImageData
+        activate Viewport
+        Viewport -> Viewport : BaseCanvas 繪製即時預覽圖
+        deactivate Viewport
+    end
+end
+deactivate App
+deactivate Inspector
+
+User -> Inspector : 滿意預覽效果，點擊「套用變更」按鈕
+activate Inspector
+Inspector -> App : onApplyBinary()
+activate App
+App -> App : setBaseImageData(previewImageData)
+App -> App : setPreviewImageData(null)
+App -> App : setActiveTool('none')
+App -> App : pushHistory("套用純黑白二值化", previewImageData)
+App -> Viewport : 重新以 baseImageData 渲染底圖
+deactivate App
+deactivate Inspector
+
+@enduml

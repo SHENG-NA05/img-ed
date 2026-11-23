@@ -1,0 +1,54 @@
+sequenceDiagram
+    autonumber
+    actor User as 👤 使用者
+    participant MainWin as 🖥️ 主視窗 (App)
+    participant Bridge as 🌉 TauriBridge
+    participant TauriCore as 🦀 Tauri 後端核心 (lib.rs)
+    participant State as 📦 AppState (Mutex)
+    participant GifWin as 🪟 GIF 工作坊視窗 (GifStudioWindow)
+    participant GifOps as 🎞️ gif_ops 動畫編碼器
+    participant OS as 💻 作業系統檔案系統
+
+    User->>MainWin: 點擊「擷取目前畫布為 GIF 影格」按鈕
+    MainWin->>MainWin: getMergedCompositeDataUrl()
+    note over MainWin: 新建臨時 Canvas，將 BaseCanvas 與 DrawingCanvas 合成一體
+    
+    MainWin->>Bridge: invokeAddSharedGifFrame(frameItem)
+    Bridge->>TauriCore: invoke("add_shared_gif_frame", { frame })
+    
+    TauriCore->>State: inner.lock().shared_frames.push(frame)
+    note over State: 存入後端受管狀態 (執行緒安全)
+    
+    TauriCore->>TauriCore: app_handle.emit("gif_frame_added", &frame)
+    note over TauriCore: 向所有 Webview 視窗廣播影格新增事件
+    
+    TauriCore-->>Bridge: 回傳目前總影格數量
+    Bridge-->>MainWin: Promise.resolve(count)
+    
+    MainWin->>Bridge: invokeOpenGifStudio()
+    Bridge->>TauriCore: invoke("open_gif_studio_window")
+    TauriCore->>GifWin: 顯示並聚焦 960x680 獨立工作坊視窗
+
+    GifWin->>GifWin: 收到 "gif_frame_added" 廣播事件監聽回呼
+    GifWin->>GifWin: setFrames(prev => [...prev, newFrame])
+    note over GifWin: 時間軸動態更新，中央即時播放循環預覽
+
+    User->>GifWin: 於時間軸拖曳調整影格次序、設定全域延遲 120ms
+    User->>GifWin: 點擊「匯出動態 GIF」按鈕
+    GifWin->>Bridge: pickSavePath("animation.gif", ...)
+    Bridge->>OS: 開啟儲存檔案對話框
+    OS-->>Bridge: 回傳選定路徑 "C:/Images/output.gif"
+    Bridge-->>GifWin: savePath
+
+    GifWin->>Bridge: invokeExportGif(options, savePath)
+    Bridge->>TauriCore: invoke("export_gif", { options, file_path })
+    
+    TauriCore->>GifOps: create_gif_bytes(&options)
+    note over GifOps: 1. 計算目標尺寸 (crop / min_fit)<br/>2. 串流編碼 Frame (包含 NeuQuant 局部量化與延遲)<br/>3. 設定重複循環次數 Repeat::Infinite
+    GifOps-->>TauriCore: 回傳完整 GIF 二進位位元組 (Vec<u8>)
+    
+    TauriCore->>OS: std::fs::write(&file_path, bytes)
+    OS-->>TauriCore: 寫入成功
+    TauriCore-->>Bridge: Ok("成功匯出 GIF 至 C:/Images/output.gif")
+    Bridge-->>GifWin: 匯出成功回傳
+    GifWin->>User: 顯示綠色成功徽章與檔案匯出通知

@@ -1,0 +1,30 @@
+flowchart LR
+    User(["👤 使用者 (User)"])
+
+    subgraph DrawBoundary ["子系統 2：雙圖層筆刷塗鴉與歷史狀態管理"]
+        direction TB
+
+        UC_Draw(["自由筆刷塗鴉繪製"])
+        UC_Erase(["精準橡皮擦除 (destination-out)"])
+        UC_Clear(["清空塗鴉圖層"])
+        UC_Param(["配置筆刷參數 (粗細 / 透明度 / 色碼)"])
+        UC_Toggle(["切換塗鴉層顯示 / 隱藏"])
+
+        UC_HistoryCommit(["保存雙圖層狀態快照 (HistoryStep)"])
+        UC_Undo(["復原操作 (Undo Ctrl+Z)"])
+        UC_Redo(["重做操作 (Redo Ctrl+Y)"])
+    end
+
+    User --> UC_Draw
+    User --> UC_Erase
+    User --> UC_Clear
+    User --> UC_Toggle
+    User --> UC_Undo
+    User --> UC_Redo
+
+    UC_Draw -.->|<<extend>>| UC_Param
+    UC_Draw -.->|<<include>>| UC_HistoryCommit
+    UC_Erase -.->|<<include>>| UC_HistoryCommit
+    UC_Clear -.->|<<include>>| UC_HistoryCommit
+    UC_Undo -.->|<<include>>| UC_HistoryCommit
+    UC_Redo -.->|<<include>>| UC_HistoryCommit

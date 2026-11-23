@@ -1,0 +1,85 @@
+@startuml
+title Photoshop Studio - 使用者案例圖 (Use Case Architecture)
+left to right direction
+skinparam packageStyle rectangle
+skinparam handwritten false
+skinparam actorStyle awesome
+skinparam roundcorner 8
+
+actor "使用者\n(User)" as User
+actor "作業系統 / 檔案系統\n(OS / File System)" as OS
+
+rectangle "Photoshop Studio 系統核心邊界" {
+    
+    package "1. 影像檔案管理" {
+        usecase "匯入影像\n(選取 / 拖放 / 測試卡)" as UC_Import
+        usecase "匯出合成影像\n(PNG / JPG / BMP)" as UC_Export
+        usecase "重設為原始圖檔" as UC_Reset
+    }
+
+    package "2. 空間域與色調濾鏡增強" {
+        usecase "套用影像增強濾鏡" as UC_Filter
+        usecase "即時參數運算預覽" as UC_Preview
+        usecase "局部矩形框選去噪" as UC_BoxNoise
+        usecase "三段檢視 (原圖/遮罩/銳化)" as UC_LaplacianView
+    }
+
+    package "3. 雙圖層筆刷塗鴉與標註" {
+        usecase "自由筆刷塗鴉繪製" as UC_Draw
+        usecase "精準橡皮擦除 (不傷底圖)" as UC_Erase
+        usecase "配置筆刷參數 (粗細/顏色)" as UC_BrushParam
+        usecase "清除所有塗鴉" as UC_Clear
+    }
+
+    package "4. 視角導航與歷史管理" {
+        usecase "畫布平移與滾輪縮放" as UC_PanZoom
+        usecase "即時像素探針取樣" as UC_PixelProbe
+        usecase "歷史復原 / 重做 (Undo/Redo)" as UC_History
+        usecase "保存雙圖層狀態快照" as UC_Snapshot
+    }
+
+    package "5. GIF 動畫製作工作坊" {
+        usecase "製作與管理 GIF 動畫" as UC_GifStudio
+        usecase "擷取當前畫布影格" as UC_CaptureFrame
+        usecase "本機批次匯入圖檔" as UC_BatchImport
+        usecase "時間軸管理與循環預覽" as UC_Timeline
+        usecase "匯出動態 .gif 檔案" as UC_ExportGif
+    }
+}
+
+' 使用者直接目標關聯 (清楚無雜線)
+User --> UC_Import
+User --> UC_Export
+User --> UC_Reset
+User --> UC_Filter
+User --> UC_Draw
+User --> UC_Erase
+User --> UC_Clear
+User --> UC_PanZoom
+User --> UC_PixelProbe
+User --> UC_History
+User --> UC_GifStudio
+
+' 檔案系統次參與者關聯
+UC_Import --> OS
+UC_Export --> OS
+UC_BatchImport --> OS
+UC_ExportGif --> OS
+
+' 內部擴充與包含關係 (模組內部閉環，不跨包穿插)
+UC_Filter ..> UC_Preview : <<include>>
+UC_Filter <.. UC_BoxNoise : <<extend>>
+UC_Filter <.. UC_LaplacianView : <<extend>>
+
+UC_Draw <.. UC_BrushParam : <<extend>>
+UC_Draw ..> UC_Snapshot : <<include>>
+UC_Erase ..> UC_Snapshot : <<include>>
+UC_Clear ..> UC_Snapshot : <<include>>
+UC_History ..> UC_Snapshot : <<include>>
+
+UC_GifStudio ..> UC_Timeline : <<include>>
+UC_GifStudio ..> UC_ExportGif : <<include>>
+UC_GifStudio <.. UC_CaptureFrame : <<extend>>
+UC_GifStudio <.. UC_BatchImport : <<extend>>
+
+@enduml

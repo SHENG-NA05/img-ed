@@ -1,0 +1,47 @@
+sequenceDiagram
+    autonumber
+    actor User as 👤 使用者
+    participant Viewport as 🎨 CanvasViewport
+    participant Engine as 🖌️ BrushEngine
+    participant DrawingCanvas as 🖼️ DrawingCanvas (上層畫布)
+    participant App as ⚛️ App 控制器
+    participant History as 📚 歷史堆疊 (Unified History)
+
+    User->>Viewport: 滑鼠於畫布按下 (MouseDown at P1)
+    Viewport->>Engine: startStroke(P1)
+    note over Engine: 記錄 lastPoint = P1, isDrawing = true
+    Engine->>DrawingCanvas: renderStroke(P1, P1) 繪製起點圓點
+
+    loop 滑鼠持續拖曳移動 (MouseMove)
+        User->>Viewport: 滑鼠移動至 P2 (座標經 Zoom 與 Pan 逆轉換)
+        Viewport->>Engine: continueStroke(P2)
+        alt 筆刷類型為橡皮擦 (Eraser)
+            Engine->>DrawingCanvas: 設定 globalCompositeOperation = "destination-out"
+            Engine->>DrawingCanvas: 擦除上層塗鴉筆跡 (絲毫不傷底圖)
+        else 筆刷類型為鋼筆 / 蠟筆 / 螢光筆
+            Engine->>DrawingCanvas: 進行筆刷紋理插值與 Bezier 平滑渲染
+        end
+        Viewport->>App: onPixelHover(取樣合成畫面座標與色碼)
+    end
+
+    User->>Viewport: 釋放滑鼠按鈕 (MouseUp)
+    Viewport->>Engine: endStroke()
+    Engine-->>Viewport: 回傳 drewSomething = true
+    Viewport->>DrawingCanvas: toDataURL("image/png")
+    DrawingCanvas-->>Viewport: 取得塗鴉層 DataURL
+    Viewport->>App: onDrawingCommit(drawingDataUrl)
+    App->>History: pushHistory("繪製筆刷塗鴉", currentBase, drawingDataUrl)
+    note over History: 歷史指標 index 推進至新步驟 (最多保留 30 階)
+
+    rect rgb(45, 25, 30)
+        note over User, History: 復原流程 (Undo Workflow)
+        User->>App: 按下鍵盤快捷鍵 Ctrl + Z
+        App->>App: handleUndo()
+        App->>History: 讀取 history[index - 1]
+        History-->>App: 回傳前一步驟快照 (prevBase, prevDrawing)
+        App->>App: setBaseImageData(prevBase)
+        App->>DrawingCanvas: clearRect(0, 0, width, height)
+        App->>DrawingCanvas: drawImage(prevDrawing)
+        App->>App: setHistoryIndex(index - 1)
+        note over App: 畫布雙圖層狀態完全復原至塗鴉前
+    end

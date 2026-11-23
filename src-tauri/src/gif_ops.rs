@@ -14,9 +14,10 @@ pub struct GifFrameInput {
 pub struct GifExportOptions {
     pub frames: Vec<GifFrameInput>,
     pub global_delay_ms: u32,
-    pub speed_multiplier: f32, // e.g. 0.25 to 4.0
-    pub loop_count: u16,       // 0 for infinite
-    pub scale: f32,            // 0.25 to 1.0
+    #[serde(default)]
+    pub speed_multiplier: Option<f32>,
+    pub loop_count: u16,               // 0 for infinite
+    pub scale: f32,                    // 0.25 to 1.0
 }
 
 pub fn create_gif_bytes(options: &GifExportOptions) -> Result<Vec<u8>, String> {
@@ -24,14 +25,9 @@ pub fn create_gif_bytes(options: &GifExportOptions) -> Result<Vec<u8>, String> {
         return Err("影格清單不可為空".to_string());
     }
 
-    let speed = if options.speed_multiplier > 0.0 {
-        options.speed_multiplier
-    } else {
-        1.0
-    };
-
-    // Determine target dimensions from the first frame and scale, then immediately release it
     let scale = options.scale.clamp(0.1, 2.0);
+
+    // Determine target dimensions based on the first frame scaled
     let (target_w, target_h) = {
         let first_img = decode_image(&options.frames[0].image_data)?;
         let tw = ((first_img.width() as f32 * scale).round() as u32).max(1);
@@ -54,19 +50,21 @@ pub fn create_gif_bytes(options: &GifExportOptions) -> Result<Vec<u8>, String> {
                 .map_err(|e| format!("設定循環次數失敗: {}", e))?;
         }
 
-        // Stream encode: decode single frame -> resize -> encode -> drop immediately
+        // Stream encode: decode single frame -> resize to target -> encode -> drop immediately
         for (i, frame_input) in options.frames.iter().enumerate() {
             let dyn_img = decode_image(&frame_input.image_data)?;
-            let resized = if dyn_img.width() != target_w || dyn_img.height() != target_h {
+
+            let transformed = if dyn_img.width() != target_w || dyn_img.height() != target_h {
                 dyn_img.resize_exact(target_w, target_h, FilterType::Triangle)
             } else {
                 dyn_img
             };
 
+            // Use frame delay directly in 10ms units (hundredths of a second)
             let delay_ms = frame_input.delay_ms.unwrap_or(options.global_delay_ms);
-            let adjusted_delay = (delay_ms as f32 / speed / 10.0).round().max(1.0) as u16;
+            let adjusted_delay = (delay_ms as f32 / 10.0).round().max(1.0) as u16;
 
-            let mut rgba = resized.to_rgba8().into_raw();
+            let mut rgba = transformed.to_rgba8().into_raw();
             let mut frame = Frame::from_rgba_speed(target_w as u16, target_h as u16, &mut rgba, 10);
             frame.delay = adjusted_delay;
 

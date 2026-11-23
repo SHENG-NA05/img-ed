@@ -1,0 +1,281 @@
+classDiagram
+    direction TB
+
+    %% ---------------- 前端展示層 ----------------
+    class App {
+        -string filename
+        -string baseImageData
+        -string previewImageData
+        -string originalImageData
+        -ToolType activeTool
+        -boolean showDrawingLayer
+        -BrushType brushType
+        -number brushSize
+        -number brushOpacity
+        -string brushColor
+        -number binaryThreshold
+        -number paletteCount
+        -number medianKernel
+        -number medianCount
+        -string laplacianKernelType
+        -number laplacianStrength
+        -LaplacianViewMode laplacianMode
+        -number zoom
+        -Point pan
+        -HistoryStep[] history
+        -number historyIndex
+        +pushHistory(description, newBase, newDrawing) void
+        +loadImageData(dataUrl, name) void
+        +handleUndo() void
+        +handleRedo() void
+        +handleResetOriginal() void
+        +handleSelectTool(tool) void
+        +handleApplyCurrentPreview(desc) void
+        +handleApplyMedianRect(rect) void
+        +handleDrawingCommit(drawingDataUrl) void
+        +getMergedCompositeDataUrl() string
+        +handleExport() void
+        +handleImport() void
+        +handleCaptureCurrentCanvas() void
+        +handleOpenGifStudio() void
+    }
+
+    class CanvasViewport {
+        -boolean isPanning
+        -boolean spacePressed
+        -Point panStart
+        -boolean isSelectingRect
+        -Point rectStart
+        -FilterRegion currentRect
+        -BrushEngine brushEngine
+        +handleMouseDown(e) void
+        +handleMouseMove(e) void
+        +handleMouseUp(e) void
+        +handleWheel(e) void
+        +handleDrop(e) void
+        +samplePixelAtPoint(screenX, screenY) PixelInfo
+    }
+
+    class HeaderBar {
+        +string filename
+        +LaplacianViewMode laplacianMode
+        +boolean canUndo
+        +boolean canRedo
+        +number zoom
+        +onUndo() void
+        +onRedo() void
+        +onLaplacianModeChange(mode) void
+        +onZoomIn() void
+        +onZoomOut() void
+        +onZoomFit() void
+    }
+
+    class LeftToolDock {
+        +ToolType activeTool
+        +onSelectTool(tool) void
+        +onImport() void
+        +onExport() void
+        +onOpenGifStudio() void
+    }
+
+    class RightInspector {
+        +ToolType activeTool
+        +number binaryThreshold
+        +number paletteCount
+        +number medianKernel
+        +number medianCount
+        +string laplacianKernelType
+        +number laplacianStrength
+        +BrushType brushType
+        +number brushSize
+        +string brushColor
+        +onApplyBinary() void
+        +onApplyPalette() void
+        +onApplyMedian() void
+        +onApplyLaplacian() void
+    }
+
+    class BottomStatusBar {
+        +PixelInfo pixelInfo
+        +Dimensions imageDimensions
+        +number zoom
+    }
+
+    class GifStudioWindow {
+        -GifFrameItem[] frames
+        -number currentFrameIndex
+        -boolean isPlaying
+        -number globalDelayMs
+        -number loopCount
+        -number scale
+        -number dragSourceIndex
+        -number dragTargetIndex
+        +handleImportBatch() void
+        +handleCaptureFromCanvas() void
+        +handleMoveFrame(from, to) void
+        +handleDuplicateFrame(idx) void
+        +handleDeleteFrame(idx) void
+        +handleExportGif() void
+    }
+
+    %% ---------------- 前端引擎與資料型別 ----------------
+    class BrushEngine {
+        -CanvasRenderingContext2D ctx
+        -Point lastPoint
+        -boolean isDrawing
+        -BrushOptions options
+        -RGB cachedRgb
+        -number airbrushTimer
+        +startStroke(p) void
+        +continueStroke(p) void
+        +endStroke() boolean
+        -renderStroke(p1, p2) void
+        -drawPen(p1, p2) void
+        -drawCrayon(p1, p2) void
+        -drawHighlighter(p1, p2) void
+        -drawAirbrush(p) void
+        -drawWatercolor(p1, p2) void
+        -drawEraser(p1, p2) void
+    }
+
+    class HistoryStep {
+        +string baseImageData
+        +string drawingImageData
+        +string description
+        +number timestamp
+    }
+
+    class PixelInfo {
+        +number x
+        +number y
+        +number r
+        +number g
+        +number b
+        +string hex
+    }
+
+    class BrushOptions {
+        +BrushType type
+        +number size
+        +number opacity
+        +string color
+    }
+
+    class FilterRegion {
+        +number x
+        +number y
+        +number width
+        +number height
+    }
+
+    class PaletteResult {
+        +string image_data
+        +number[][] palette
+    }
+
+    class LaplacianResult {
+        +string original_data
+        +string mask_data
+        +string sharpened_data
+    }
+
+    class GifFrameItem {
+        +string id
+        +string imageData
+        +number delayMs
+    }
+
+    class GifExportOptions {
+        +GifFrameInput[] frames
+        +number global_delay_ms
+        +number loop_count
+        +number scale
+        +string resize_mode
+    }
+
+    class TauriBridge {
+        <<module>>
+        +invokeGrayscale(imageData) Promise~string~
+        +invokeBinary(imageData, threshold) Promise~string~
+        +invokePalette(imageData, numColors, dither) Promise~PaletteResult~
+        +invokeNegative(imageData) Promise~string~
+        +invokeMedian(imageData, kernel, region) Promise~string~
+        +invokeLaplacian(imageData, kernel, strength) Promise~LaplacianResult~
+        +invokeAddSharedGifFrame(frame) Promise~number~
+        +invokeGetSharedGifFrames() Promise~GifFrameInput[]~
+        +invokeExportGif(options, path) Promise~string~
+        +invokeSaveImage(data, path, quality) Promise~string~
+        +invokeOpenGifStudio() Promise~void~
+        +pickImageFile() Promise~string~
+        +pickSavePath(title, filter) Promise~string~
+    }
+
+    %% ---------------- 後端 Rust 原生層 ----------------
+    class AppState {
+        +Mutex~AppStateInner~ inner
+        +new() AppState
+    }
+
+    class AppStateInner {
+        +Vec~GifFrameInput~ shared_frames
+    }
+
+    class ImageOps {
+        <<module>>
+        +decode_image(b64) Result~DynamicImage~
+        +encode_image_png(img) Result~string~
+        +encode_rgba_png(buf) Result~string~
+        +to_grayscale(img) Result~string~
+        +to_binary(img, thresh) Result~string~
+        +to_palette(img, n_colors, dither) Result~PaletteResult~
+        +to_negative(img) Result~string~
+        +median_filter_region(img, k_size, region) Result~string~
+        +laplacian_filter(img, k_type, strength) Result~LaplacianResult~
+    }
+
+    class GifOps {
+        <<module>>
+        +create_gif_bytes(options) Result~Vec_u8~
+    }
+
+    class TauriCommands {
+        <<interface>>
+        +process_grayscale(image_data)
+        +process_binary(image_data, threshold)
+        +process_palette(image_data, num_colors, dither)
+        +process_negative(image_data)
+        +process_median(image_data, kernel_size, region)
+        +process_laplacian(image_data, kernel_type, strength)
+        +add_shared_gif_frame(frame, state, app_handle)
+        +get_shared_gif_frames(state)
+        +export_gif(options, file_path)
+        +save_image_file(image_data, file_path, quality)
+    }
+
+    %% ---------------- 關聯性與依賴關係 ----------------
+    App *-- HeaderBar : 組合
+    App *-- LeftToolDock : 組合
+    App *-- CanvasViewport : 組合
+    App *-- RightInspector : 組合
+    App *-- BottomStatusBar : 組合
+    App o-- GifStudioWindow : 聚合與開啟
+    App *-- "0..30" HistoryStep : 維護歷史堆疊
+
+    CanvasViewport *-- BrushEngine : 持有並調用繪圖
+    CanvasViewport ..> PixelInfo : 產生探針資料
+    CanvasViewport ..> FilterRegion : 產生局部框選範圍
+    BrushEngine ..> BrushOptions : 依賴配置參數
+
+    App ..> TauriBridge : 透過 IPC 調用原生服務
+    GifStudioWindow ..> TauriBridge : 調用影格共享與匯出
+    GifStudioWindow *-- "*" GifFrameItem : 包含時間軸影格
+
+    TauriBridge ..> PaletteResult : 回傳資料結構
+    TauriBridge ..> LaplacianResult : 回傳資料結構
+    TauriBridge ..> GifExportOptions : 傳遞匯出參數
+
+    TauriBridge ..> TauriCommands : Tauri IPC 通訊
+    TauriCommands ..> AppState : 存取受管狀態
+    AppState *-- AppStateInner : 互斥鎖保護
+    TauriCommands ..> ImageOps : 呼叫核心演算法
+    TauriCommands ..> GifOps : 呼叫動畫編碼

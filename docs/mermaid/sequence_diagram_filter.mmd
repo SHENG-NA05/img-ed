@@ -1,0 +1,41 @@
+sequenceDiagram
+    autonumber
+    actor User as 👤 使用者
+    participant Inspector as 🖥️ RightInspector
+    participant App as ⚛️ App 控制核心
+    participant Bridge as 🌉 TauriBridge
+    participant TauriCmd as 🦀 TauriCommand (lib.rs)
+    participant RustCore as ⚙️ image_ops 影像核心
+    participant Viewport as 🎨 CanvasViewport (BaseCanvas)
+
+    User->>Inspector: 拖動二值化閾值滑桿 (Threshold = 180)
+    Inspector->>App: 觸發 onBinaryThresholdChange(180)
+    
+    rect rgb(30, 41, 59)
+        note over App: 建立非同步取消旗標 (isCancelled = false)
+        App->>Bridge: invokeBinary(baseImageData, 180)
+        Bridge->>TauriCmd: invoke("process_binary", { image_data, threshold: 180 })
+        
+        TauriCmd->>RustCore: decode_image(&image_data)
+        RustCore-->>TauriCmd: DynamicImage 實例
+        TauriCmd->>RustCore: to_binary(&img, 180)
+        note over RustCore: 遍歷像素矩陣計算亮度 Y >= 180 ? 255 : 0<br/>使用 encode_rgba_png 零拷貝編碼
+        RustCore-->>TauriCmd: 回傳 DataURL (data:image/png;base64,...)
+        TauriCmd-->>Bridge: IPC 回傳 Base64 結果字串
+        Bridge-->>App: Promise.resolve(previewUrl)
+        
+        opt 驗證取消旗標 (若使用者中途未再次拖動滑桿)
+            App->>App: setPreviewImageData(previewUrl)
+            App->>Viewport: 傳入 previewImageData
+            Viewport->>Viewport: BaseCanvas 繪製預覽圖片
+        end
+    end
+
+    User->>Inspector: 滿意預覽效果，點擊「套用變更」按鈕
+    Inspector->>App: 觸發 onApplyBinary()
+    App->>App: setBaseImageData(previewImageData)
+    App->>App: setPreviewImageData(null)
+    App->>App: setActiveTool('none')
+    App->>App: pushHistory("套用純黑白二值化", previewImageData)
+    note over App: 歷史堆疊新增步驟 (Unified History Step)
+    App->>Viewport: 重新以 baseImageData 渲染底圖

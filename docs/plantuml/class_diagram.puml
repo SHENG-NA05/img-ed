@@ -1,0 +1,250 @@
+@startuml
+title Photoshop Studio - 系統類別圖 (Class Diagram)
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam roundcorner 5
+
+package "前端展示層 (React Presentation Layer)" {
+    class App {
+        - filename: string
+        - baseImageData: string
+        - previewImageData: string
+        - originalImageData: string
+        - activeTool: ToolType
+        - showDrawingLayer: boolean
+        - brushType: BrushType
+        - zoom: number
+        - pan: Point
+        - history: List<HistoryStep>
+        - historyIndex: int
+        + pushHistory(description, newBase, newDrawing): void
+        + loadImageData(dataUrl, name): void
+        + handleUndo(): void
+        + handleRedo(): void
+        + handleResetOriginal(): void
+        + handleSelectTool(tool): void
+        + handleApplyCurrentPreview(desc): void
+        + handleApplyMedianRect(rect): void
+        + handleDrawingCommit(drawingDataUrl): void
+        + getMergedCompositeDataUrl(): string
+        + handleExport(): void
+        + handleImport(): void
+        + handleCaptureCurrentCanvas(): void
+        + handleOpenGifStudio(): void
+    }
+
+    class CanvasViewport {
+        - isPanning: boolean
+        - spacePressed: boolean
+        - panStart: Point
+        - isSelectingRect: boolean
+        - rectStart: Point
+        - currentRect: FilterRegion
+        - brushEngine: BrushEngine
+        + handleMouseDown(e): void
+        + handleMouseMove(e): void
+        + handleMouseUp(e): void
+        + handleWheel(e): void
+        + handleDrop(e): void
+        + samplePixelAtPoint(screenX, screenY): PixelInfo
+    }
+
+    class HeaderBar {
+        + filename: string
+        + laplacianMode: LaplacianViewMode
+        + canUndo: boolean
+        + canRedo: boolean
+        + zoom: number
+        + onUndo(): void
+        + onRedo(): void
+        + onLaplacianModeChange(mode): void
+        + onZoomIn(): void
+        + onZoomOut(): void
+        + onZoomFit(): void
+    }
+
+    class LeftToolDock {
+        + activeTool: ToolType
+        + onSelectTool(tool): void
+        + onImport(): void
+        + onExport(): void
+        + onOpenGifStudio(): void
+    }
+
+    class RightInspector {
+        + activeTool: ToolType
+        + binaryThreshold: number
+        + paletteCount: number
+        + medianKernel: number
+        + medianCount: number
+        + laplacianKernelType: string
+        + laplacianStrength: number
+        + brushType: BrushType
+        + brushSize: number
+        + brushColor: string
+        + onApplyBinary(): void
+        + onApplyPalette(): void
+        + onApplyMedian(): void
+        + onApplyLaplacian(): void
+    }
+
+    class BottomStatusBar {
+        + pixelInfo: PixelInfo
+        + imageDimensions: Dimensions
+        + zoom: number
+    }
+
+    class GifStudioWindow {
+        - frames: List<GifFrameItem>
+        - currentFrameIndex: int
+        - isPlaying: boolean
+        - globalDelayMs: int
+        - loopCount: int
+        - scale: float
+        + handleImportBatch(): void
+        + handleCaptureFromCanvas(): void
+        + handleMoveFrame(from, to): void
+        + handleDuplicateFrame(idx): void
+        + handleDeleteFrame(idx): void
+        + handleExportGif(): void
+    }
+}
+
+package "前端引擎與資料型別 (TypeScript Engine & Types)" {
+    class BrushEngine {
+        - ctx: CanvasRenderingContext2D
+        - lastPoint: Point
+        - isDrawing: boolean
+        - options: BrushOptions
+        - cachedRgb: RGB
+        + startStroke(p: Point): void
+        + continueStroke(p: Point): void
+        + endStroke(): boolean
+        - renderStroke(p1, p2): void
+        - drawPen(p1, p2): void
+        - drawCrayon(p1, p2): void
+        - drawHighlighter(p1, p2): void
+        - drawAirbrush(p): void
+        - drawWatercolor(p1, p2): void
+        - drawEraser(p1, p2): void
+    }
+
+    class HistoryStep {
+        + baseImageData: string
+        + drawingImageData: string
+        + description: string
+        + timestamp: long
+    }
+
+    class PixelInfo {
+        + x: int
+        + y: int
+        + r: int
+        + g: int
+        + b: int
+        + hex: string
+    }
+
+    class FilterRegion {
+        + x: int
+        + y: int
+        + width: int
+        + height: int
+    }
+
+    class PaletteResult {
+        + image_data: string
+        + palette: List<RGB>
+    }
+
+    class LaplacianResult {
+        + original_data: string
+        + mask_data: string
+        + sharpened_data: string
+    }
+
+    class GifFrameItem {
+        + id: string
+        + imageData: string
+        + delayMs: int
+    }
+
+    class TauriBridge <<module>> {
+        + invokeGrayscale(imageData): Promise<string>
+        + invokeBinary(imageData, threshold): Promise<string>
+        + invokePalette(imageData, numColors, dither): Promise<PaletteResult>
+        + invokeNegative(imageData): Promise<string>
+        + invokeMedian(imageData, kernel, region): Promise<string>
+        + invokeLaplacian(imageData, kernel, strength): Promise<LaplacianResult>
+        + invokeAddSharedGifFrame(frame): Promise<int>
+        + invokeGetSharedGifFrames(): Promise<List<GifFrameInput>>
+        + invokeExportGif(options, path): Promise<string>
+        + invokeSaveImage(data, path, quality): Promise<string>
+        + invokeOpenGifStudio(): Promise<void>
+    }
+}
+
+package "後端原生核心 (Rust Native Core)" {
+    class AppState {
+        + inner: Mutex<AppStateInner>
+        + new(): AppState
+    }
+
+    class AppStateInner {
+        + shared_frames: Vec<GifFrameInput>
+    }
+
+    class ImageOps <<module>> {
+        + decode_image(b64): Result<DynamicImage>
+        + encode_image_png(img): Result<string>
+        + encode_rgba_png(buf): Result<string>
+        + to_grayscale(img): Result<string>
+        + to_binary(img, thresh): Result<string>
+        + to_palette(img, n_colors, dither): Result<PaletteResult>
+        + to_negative(img): Result<string>
+        + median_filter_region(img, k_size, region): Result<string>
+        + laplacian_filter(img, k_type, strength): Result<LaplacianResult>
+    }
+
+    class GifOps <<module>> {
+        + create_gif_bytes(options): Result<Vec<u8>>
+    }
+
+    class TauriCommands <<interface>> {
+        + process_grayscale(image_data)
+        + process_binary(image_data, threshold)
+        + process_palette(image_data, num_colors, dither)
+        + process_negative(image_data)
+        + process_median(image_data, kernel_size, region)
+        + process_laplacian(image_data, kernel_type, strength)
+        + add_shared_gif_frame(frame, state, app_handle)
+        + get_shared_gif_frames(state)
+        + export_gif(options, file_path)
+        + save_image_file(image_data, file_path, quality)
+    }
+}
+
+' 關聯與組合
+App *-- HeaderBar : 組合
+App *-- LeftToolDock : 組合
+App *-- CanvasViewport : 組合
+App *-- RightInspector : 組合
+App *-- BottomStatusBar : 組合
+App o-- GifStudioWindow : 聚合
+App *-- "0..30" HistoryStep : 維護歷史堆疊
+
+CanvasViewport *-- BrushEngine : 調用繪圖
+CanvasViewport ..> PixelInfo : 產生
+CanvasViewport ..> FilterRegion : 產生
+
+App ..> TauriBridge : IPC 通訊
+GifStudioWindow ..> TauriBridge : 影格同步與匯出
+GifStudioWindow *-- "*" GifFrameItem : 影格清單
+
+TauriBridge ..> TauriCommands : invoke IPC
+TauriCommands ..> AppState : 存取受管狀態
+AppState *-- AppStateInner : 鎖保護
+TauriCommands ..> ImageOps : 調用
+TauriCommands ..> GifOps : 調用
+
+@enduml

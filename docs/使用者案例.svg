@@ -1,0 +1,304 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2006.0449999999998 2037.75" width="2006.0449999999998" height="2037.75" style="--bg:#18181B;--fg:#F4F4F5;--line:#71717A;--muted:#A1A1AA;--surface:#27272A;--border:#3F3F46;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<g class="subgraph" data-id="SystemBoundary" data-label="Photoshop Studio 桌面影像處理系統邊界">
+  <rect x="443.567" y="40" width="1229.4219999999998" height="1957.75" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="443.567" y="40" width="1229.4219999999998" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="455.567" y="54" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Photoshop Studio 桌面影像處理系統邊界</text>
+<g class="subgraph" data-id="Sub_File" data-label="1. 影像檔案管理">
+  <rect x="641.612625" y="84" width="262.16399999999993" height="356.5" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="641.612625" y="84" width="262.16399999999993" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="653.612625" y="98" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">1. 影像檔案管理</text>
+</g>
+<g class="subgraph" data-id="Sub_Filter" data-label="2. 高效能濾鏡與增強">
+  <rect x="476.76599999999996" y="468.5" width="653.226" height="548.45" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="476.76599999999996" y="468.5" width="653.226" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="488.76599999999996" y="482.5" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">2. 高效能濾鏡與增強</text>
+</g>
+<g class="subgraph" data-id="Sub_Drawing" data-label="3. 雙圖層筆刷塗鴉">
+  <rect x="465.567" y="1234.75" width="731.6189999999999" height="291.6" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="465.567" y="1234.75" width="731.6189999999999" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="477.567" y="1248.75" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">3. 雙圖層筆刷塗鴉</text>
+</g>
+<g class="subgraph" data-id="Sub_History" data-label="4. 歷史紀錄與狀態復原">
+  <rect x="1373.0479999999998" y="1282.2875" width="283.941" height="226.70000000000002" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="1373.0479999999998" y="1282.2875" width="283.941" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="1385.0479999999998" y="1296.2875" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">4. 歷史紀錄與狀態復原</text>
+</g>
+<g class="subgraph" data-id="Sub_Viewport" data-label="5. 視角導航與像素檢驗">
+  <rect x="465.567" y="1044.95" width="294.76800000000003" height="161.8" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="465.567" y="1044.95" width="294.76800000000003" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="477.567" y="1058.95" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">5. 視角導航與像素檢驗</text>
+</g>
+<g class="subgraph" data-id="Sub_Gif" data-label="6. GIF 動畫製作工作坊">
+  <rect x="570.1485" y="1560.35" width="313.29299999999995" height="421.4" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="570.1485" y="1560.35" width="313.29299999999995" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="582.1485" y="1574.35" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">6. GIF 動畫製作工作坊</text>
+</g>
+</g>
+<polyline class="edge" data-from="User" data-to="UC_Import" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,146.45 701.516875,146.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_ImportDrop" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,211.35000000000002 643.1843125,211.35000000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_Sample" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,276.25 643.1843125,276.25" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_Export" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,341.15000000000003 643.1843125,341.15000000000003" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_Reset" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,406.05 701.516875,406.05" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_PanZoom" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,1107.4 509.64349999999996,1107.4" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_PixelInspect" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,1172.3000000000002 509.64349999999996,1172.3000000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_Grayscale" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,724.2750000000001 509.64349999999996,724.2750000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_Binary" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,570.8392857142858 509.64349999999996,570.8392857142858" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_Palette" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,635.7392857142858 509.64349999999996,635.7392857142858" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_Negative" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,789.175 509.64349999999996,789.175" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_Median" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,877.7107142857144 509.64349999999996,877.7107142857144" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_Laplacian" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,942.6107142857143 509.64349999999996,942.6107142857143" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_DrawStroke" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,1297.2 509.64349999999996,1297.2" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_EraseStroke" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,1362.1000000000001 509.64349999999996,1362.1000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_ClearDrawing" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,1427 577.021,1427" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_ToggleLayer" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,1491.9 509.64349999999996,1491.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_Undo" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,1474.5375 1413.0479999999998,1474.5375" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_Redo" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,1409.6375 1413.0479999999998,1409.6375" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_OpenGif" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,1622.8 577.021,1622.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_CaptureFrame" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,1687.7 577.021,1687.7" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_BatchImport" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,1752.6 643.1843125,1752.6" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_Timeline" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,1817.5 577.021,1817.5" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_PlayPreview" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,1882.3999999999999 577.021,1882.3999999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="User" data-to="UC_ExportGif" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="257.567,1046.875 383.60524999999996,1046.875 383.60524999999996,1947.3 643.1843125,1947.3" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC_Import" data-to="OS" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="840.537875,146.45 431.567,146.45 431.567,1046.875 1726.9889999999998,1046.875" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC_Export" data-to="OS" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="873.3483125,341.15000000000003 431.567,341.15000000000003 431.567,1046.875 1726.9889999999998,1046.875" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC_BatchImport" data-to="OS" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="803.6943125,1752.6 431.567,1752.6 431.567,1046.875 1726.9889999999998,1046.875" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC_ExportGif" data-to="OS" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="839.2623125,1947.3 431.567,1947.3 431.567,1046.875 1726.9889999999998,1046.875" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC_FilterCommon" data-to="UC_Snapshot" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="&lt;&lt;include&gt;&gt;" points="606.4343571428572,716.725 899.4809999999999,716.7249999999999 899.4809999999999,1299.7375 957.4809999999997,1299.7375 957.4809999999997,1301.0475 969.4809999999997,1301.0475" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC_DrawStroke" data-to="UC_Snapshot" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="&lt;&lt;include&gt;&gt;" points="369.5994999999999,1251.05 353.52299999999997,1251.05 353.52299999999997,1242.475 887.4809999999999,1242.475 887.4809999999999,1309.7375 957.4809999999998,1309.7375 957.4809999999998,1308.4274999999998 969.4809999999998,1308.4274999999998" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC_ClearDrawing" data-to="UC_Snapshot" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="&lt;&lt;include&gt;&gt;" points="264.32399999999996,1387 771.6189999999999,1387 771.6189999999999,1361.05 887.4809999999999,1361.05 887.4809999999999,1319.7375 957.4809999999998,1319.7375 957.4809999999998,1315.8075 969.4809999999998,1315.8075" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC_Reset" data-to="UC_Snapshot" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="&lt;&lt;include&gt;&gt;" points="403.6398750000001,366.05 911.4809999999999,366.05 911.4809999999999,1289.7375 957.4809999999998,1289.7375 957.4809999999998,1293.6674999999998 969.4809999999998,1293.6674999999998" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC_Binary" data-to="UC_AdjustThresh" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="&lt;&lt;extend&gt;&gt;" points="670.1534999999999,564.6892857142857 717.887,564.6892857142857 717.887,530.95 874.6713571428571,530.95" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC_Palette" data-to="UC_AdjustPalette" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="&lt;&lt;extend&gt;&gt;" points="722.7645,629.5892857142858 717.887,629.5892857142858 717.887,595.85 874.6713571428571,595.8499999999999" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC_Median" data-to="UC_BoxNoise" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="&lt;&lt;extend&gt;&gt;" points="655.3335,883.8607142857143 717.887,883.8607142857143 717.887,917.6 874.6713571428571,917.6" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC_Laplacian" data-to="UC_LaplacianView" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="&lt;&lt;extend&gt;&gt;" points="670.1534999999999,948.7607142857144 717.887,948.7607142857144 717.887,982.5 874.6713571428571,982.5" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC_Grayscale" data-to="UC_FilterCommon" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="&lt;&lt;include&gt;&gt;" points="685.7144999999998,724.275 833.749,724.275 833.749,754.0892857142858 874.6713571428571,754.0892857142858" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC_Binary" data-to="UC_FilterCommon" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="&lt;&lt;include&gt;&gt;" points="670.1534999999999,576.9892857142856 729.887,576.9892857142856 729.887,629.15 857.749,629.15 857.749,743.5464285714286 874.6713571428571,743.5464285714286" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC_Palette" data-to="UC_FilterCommon" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="&lt;&lt;include&gt;&gt;" points="722.7645,641.8892857142857 717.887,641.8892857142857 717.887,678.25 845.749,678.25 845.749,748.8178571428572 874.6713571428571,748.8178571428572" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC_Negative" data-to="UC_FilterCommon" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="&lt;&lt;include&gt;&gt;" points="640.5135,789.175 833.749,789.175 833.749,759.3607142857143 874.6713571428571,759.3607142857143" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC_Median" data-to="UC_FilterCommon" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="&lt;&lt;include&gt;&gt;" points="655.3335,871.5607142857143 717.887,871.5607142857143 717.887,835.2 845.749,835.2 845.749,764.6321428571429 874.6713571428571,764.6321428571429" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC_Laplacian" data-to="UC_FilterCommon" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="&lt;&lt;include&gt;&gt;" points="670.1534999999999,936.4607142857143 729.887,936.4607142857143 729.887,884.3 857.749,884.3 857.749,769.9035714285715 874.6713571428571,769.9035714285715" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="UC_DrawStroke" data-to="UC_BrushParam" data-style="dotted" data-arrow-start="false" data-arrow-end="true" data-label="&lt;&lt;extend&gt;&gt;" points="813.1664999999998,1303.35 797.0899999999999,1303.35 797.0899999999999,1311.925 946.576,1311.925" fill="none" stroke="var(--_line)" stroke-width="1" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<g class="edge-label" data-from="UC_FilterCommon" data-to="UC_Snapshot" data-label="&lt;&lt;include&gt;&gt;">
+  <rect x="803.6189999999998" y="700.7249999999999" width="75.86200000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="841.5499999999998" y="715.8749999999999" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">&lt;&lt;include&gt;&gt;</text>
+</g>
+<g class="edge-label" data-from="UC_DrawStroke" data-to="UC_Snapshot" data-label="&lt;&lt;include&gt;&gt;">
+  <rect x="803.6189999999999" y="1226.475" width="75.86200000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="841.55" y="1241.625" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">&lt;&lt;include&gt;&gt;</text>
+</g>
+<g class="edge-label" data-from="UC_ClearDrawing" data-to="UC_Snapshot" data-label="&lt;&lt;include&gt;&gt;">
+  <rect x="803.6189999999999" y="1345.05" width="75.86200000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="841.55" y="1360.2" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">&lt;&lt;include&gt;&gt;</text>
+</g>
+<g class="edge-label" data-from="UC_Reset" data-to="UC_Snapshot" data-label="&lt;&lt;include&gt;&gt;">
+  <rect x="803.6189999999999" y="350.05" width="75.86200000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="841.55" y="365.2" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">&lt;&lt;include&gt;&gt;</text>
+</g>
+<g class="edge-label" data-from="UC_Binary" data-to="UC_AdjustThresh" data-label="&lt;&lt;extend&gt;&gt;">
+  <rect x="751.0749999999999" y="514.95" width="73.486" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="787.818" y="530.1" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">&lt;&lt;extend&gt;&gt;</text>
+</g>
+<g class="edge-label" data-from="UC_Palette" data-to="UC_AdjustPalette" data-label="&lt;&lt;extend&gt;&gt;">
+  <rect x="751.0749999999999" y="579.85" width="73.486" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="787.818" y="595" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">&lt;&lt;extend&gt;&gt;</text>
+</g>
+<g class="edge-label" data-from="UC_Median" data-to="UC_BoxNoise" data-label="&lt;&lt;extend&gt;&gt;">
+  <rect x="751.0749999999999" y="901.6" width="73.486" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="787.818" y="916.75" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">&lt;&lt;extend&gt;&gt;</text>
+</g>
+<g class="edge-label" data-from="UC_Laplacian" data-to="UC_LaplacianView" data-label="&lt;&lt;extend&gt;&gt;">
+  <rect x="751.0749999999999" y="966.5" width="73.486" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="787.818" y="981.65" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">&lt;&lt;extend&gt;&gt;</text>
+</g>
+<g class="edge-label" data-from="UC_Grayscale" data-to="UC_FilterCommon" data-label="&lt;&lt;include&gt;&gt;">
+  <rect x="749.887" y="708.275" width="75.86200000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="787.818" y="723.425" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">&lt;&lt;include&gt;&gt;</text>
+</g>
+<g class="edge-label" data-from="UC_Binary" data-to="UC_FilterCommon" data-label="&lt;&lt;include&gt;&gt;">
+  <rect x="749.887" y="613.15" width="75.86200000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="787.818" y="628.3" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">&lt;&lt;include&gt;&gt;</text>
+</g>
+<g class="edge-label" data-from="UC_Palette" data-to="UC_FilterCommon" data-label="&lt;&lt;include&gt;&gt;">
+  <rect x="749.887" y="662.25" width="75.86200000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="787.818" y="677.4" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">&lt;&lt;include&gt;&gt;</text>
+</g>
+<g class="edge-label" data-from="UC_Negative" data-to="UC_FilterCommon" data-label="&lt;&lt;include&gt;&gt;">
+  <rect x="749.887" y="773.175" width="75.86200000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="787.818" y="788.3249999999999" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">&lt;&lt;include&gt;&gt;</text>
+</g>
+<g class="edge-label" data-from="UC_Median" data-to="UC_FilterCommon" data-label="&lt;&lt;include&gt;&gt;">
+  <rect x="749.887" y="819.1999999999999" width="75.86200000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="787.818" y="834.3499999999999" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">&lt;&lt;include&gt;&gt;</text>
+</g>
+<g class="edge-label" data-from="UC_Laplacian" data-to="UC_FilterCommon" data-label="&lt;&lt;include&gt;&gt;">
+  <rect x="749.887" y="868.3000000000001" width="75.86200000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="787.818" y="883.45" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">&lt;&lt;include&gt;&gt;</text>
+</g>
+<g class="edge-label" data-from="UC_DrawStroke" data-to="UC_BrushParam" data-label="&lt;&lt;extend&gt;&gt;">
+  <rect x="829.0899999999999" y="1295.925" width="73.486" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="865.833" y="1311.075" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">&lt;&lt;extend&gt;&gt;</text>
+</g>
+<g class="node" data-id="User" data-label="👤 使用者 (Graphic Designer)" data-shape="stadium">
+  <rect x="40" y="1028.425" width="217.56699999999998" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="148.7835" y="1046.875" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">👤 使用者 (Graphic Designer)</text>
+</g>
+<g class="node" data-id="OS" data-label="💻 作業系統 / 檔案系統 (OS / FS)" data-shape="stadium">
+  <rect x="1726.9889999999998" y="1028.425" width="239.05599999999998" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1846.5169999999998" y="1046.875" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">💻 作業系統 / 檔案系統 (OS / FS)</text>
+</g>
+<g class="node" data-id="UC_Import" data-label="開啟 / 匯入影像" data-shape="stadium">
+  <rect x="701.516875" y="128" width="139.021" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="771.027375" y="146.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">開啟 / 匯入影像</text>
+</g>
+<g class="node" data-id="UC_ImportDrop" data-label="拖放圖片至畫布" data-shape="stadium">
+  <rect x="643.1843125" y="192.9" width="145.69" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="716.0293125000001" y="211.35000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">拖放圖片至畫布</text>
+</g>
+<g class="node" data-id="UC_Sample" data-label="載入高解析測試圖卡" data-shape="stadium">
+  <rect x="643.1843125" y="257.8" width="175.32999999999998" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="730.8493125" y="276.25" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">載入高解析測試圖卡</text>
+</g>
+<g class="node" data-id="UC_Export" data-label="匯出合成影像 (PNG/JPG/BMP)" data-shape="stadium">
+  <rect x="643.1843125" y="322.70000000000005" width="230.16399999999993" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="758.2663125" y="341.15000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">匯出合成影像 (PNG/JPG/BMP)</text>
+</g>
+<g class="node" data-id="UC_Reset" data-label="重設為原始圖檔" data-shape="stadium">
+  <rect x="701.516875" y="387.6" width="145.69" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="774.361875" y="406.05" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">重設為原始圖檔</text>
+</g>
+<g class="node" data-id="UC_FilterCommon" data-label="即時預覽與確認套用" data-shape="stadium">
+  <rect x="874.6713571428571" y="738.275" width="175.32999999999998" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="962.3363571428571" y="756.725" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">即時預覽與確認套用</text>
+</g>
+<g class="node" data-id="UC_Grayscale" data-label="灰階轉換 (Luminance)" data-shape="stadium">
+  <rect x="509.64349999999996" y="705.825" width="176.07099999999997" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="597.679" y="724.2750000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">灰階轉換 (Luminance)</text>
+</g>
+<g class="node" data-id="UC_Binary" data-label="純黑白二值化處理" data-shape="stadium">
+  <rect x="509.64349999999996" y="552.3892857142857" width="160.51" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="589.8985" y="570.8392857142858" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">純黑白二值化處理</text>
+</g>
+<g class="node" data-id="UC_AdjustThresh" data-label="調整二值化閾值 (0-255)" data-shape="stadium">
+  <rect x="874.6713571428571" y="512.5" width="188.668" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="969.0053571428571" y="530.95" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">調整二值化閾值 (0-255)</text>
+</g>
+<g class="node" data-id="UC_Palette" data-label="調色盤色彩量化 (NeuQuant)" data-shape="stadium">
+  <rect x="509.64349999999996" y="617.2892857142857" width="213.12099999999995" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="616.204" y="635.7392857142858" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">調色盤色彩量化 (NeuQuant)</text>
+</g>
+<g class="node" data-id="UC_AdjustPalette" data-label="設定色數與誤差擴散抖動" data-shape="stadium">
+  <rect x="874.6713571428571" y="577.4" width="204.96999999999997" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="977.1563571428571" y="595.85" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">設定色數與誤差擴散抖動</text>
+</g>
+<g class="node" data-id="UC_Negative" data-label="負片色彩反轉" data-shape="stadium">
+  <rect x="509.64349999999996" y="770.7249999999999" width="130.87" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="575.0785" y="789.175" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">負片色彩反轉</text>
+</g>
+<g class="node" data-id="UC_Median" data-label="空間域中值濾波" data-shape="stadium">
+  <rect x="509.64349999999996" y="859.2607142857144" width="145.69" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="582.4884999999999" y="877.7107142857144" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">空間域中值濾波</text>
+</g>
+<g class="node" data-id="UC_BoxNoise" data-label="局部矩形框選去噪 (3x3/5x5/7x7)" data-shape="stadium">
+  <rect x="874.6713571428571" y="899.15" width="244.243" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="996.7928571428571" y="917.6" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">局部矩形框選去噪 (3x3/5x5/7x7)</text>
+</g>
+<g class="node" data-id="UC_Laplacian" data-label="拉普拉斯邊緣銳化" data-shape="stadium">
+  <rect x="509.64349999999996" y="924.1607142857142" width="160.51" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="589.8985" y="942.6107142857143" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">拉普拉斯邊緣銳化</text>
+</g>
+<g class="node" data-id="UC_LaplacianView" data-label="切換原圖 / 遮罩 / 銳化三段檢視" data-shape="stadium">
+  <rect x="874.6713571428571" y="964.05" width="236.09199999999998" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="992.717357142857" y="982.5" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">切換原圖 / 遮罩 / 銳化三段檢視</text>
+</g>
+<g class="node" data-id="UC_DrawStroke" data-label="自由筆刷塗鴉 (鋼筆/蠟筆/螢光/噴槍/水彩)" data-shape="stadium">
+  <rect x="509.64349999999996" y="1278.75" width="303.52299999999997" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="661.405" y="1297.2" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">自由筆刷塗鴉 (鋼筆/蠟筆/螢光/噴槍/水彩)</text>
+</g>
+<g class="node" data-id="UC_EraseStroke" data-label="精準擦除塗鴉 (不傷底圖)" data-shape="stadium">
+  <rect x="509.64349999999996" y="1343.65" width="199.783" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="609.535" y="1362.1000000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">精準擦除塗鴉 (不傷底圖)</text>
+</g>
+<g class="node" data-id="UC_BrushParam" data-label="調整筆刷粗細、透明度與顏色" data-shape="stadium">
+  <rect x="946.576" y="1293.475" width="234.60999999999999" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1063.881" y="1311.925" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">調整筆刷粗細、透明度與顏色</text>
+</g>
+<g class="node" data-id="UC_ClearDrawing" data-label="清除所有塗鴉" data-shape="stadium">
+  <rect x="577.021" y="1408.55" width="130.87" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="642.4559999999999" y="1427" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">清除所有塗鴉</text>
+</g>
+<g class="node" data-id="UC_ToggleLayer" data-label="切換塗鴉圖層顯示/隱藏" data-shape="stadium">
+  <rect x="509.64349999999996" y="1473.45" width="193.855" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="606.5709999999999" y="1491.9" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">切換塗鴉圖層顯示/隱藏</text>
+</g>
+<g class="node" data-id="UC_Undo" data-label="復原操作 Undo (Ctrl+Z)" data-shape="stadium">
+  <rect x="1413.0479999999998" y="1456.0874999999999" width="181.25799999999998" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1503.6769999999997" y="1474.5375" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">復原操作 Undo (Ctrl+Z)</text>
+</g>
+<g class="node" data-id="UC_Redo" data-label="重做操作 Redo (Ctrl+Y)" data-shape="stadium">
+  <rect x="1413.0479999999998" y="1391.1875" width="181.25799999999998" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1503.6769999999997" y="1409.6375" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">重做操作 Redo (Ctrl+Y)</text>
+</g>
+<g class="node" data-id="UC_Snapshot" data-label="保存雙圖層狀態快照 (Max 30)" data-shape="stadium">
+  <rect x="1413.0479999999998" y="1326.2875" width="227.94099999999997" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1527.0184999999997" y="1344.7375" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">保存雙圖層狀態快照 (Max 30)</text>
+</g>
+<g class="node" data-id="UC_PanZoom" data-label="畫布平移 (Space+拖曳) 與等比縮放" data-shape="stadium">
+  <rect x="509.64349999999996" y="1088.95" width="262.76800000000003" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="641.0274999999999" y="1107.4" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">畫布平移 (Space+拖曳) 與等比縮放</text>
+</g>
+<g class="node" data-id="UC_PixelInspect" data-label="即時像素探針檢驗 (座標/RGB/HEX)" data-shape="stadium">
+  <rect x="509.64349999999996" y="1153.8500000000001" width="260.54499999999996" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="639.9159999999999" y="1172.3000000000002" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">即時像素探針檢驗 (座標/RGB/HEX)</text>
+</g>
+<g class="node" data-id="UC_OpenGif" data-label="開啟 GIF 工作坊視窗" data-shape="stadium">
+  <rect x="577.021" y="1604.35" width="170.88399999999996" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="662.463" y="1622.8" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">開啟 GIF 工作坊視窗</text>
+</g>
+<g class="node" data-id="UC_CaptureFrame" data-label="擷取當前畫布為影格" data-shape="stadium">
+  <rect x="577.021" y="1669.25" width="175.32999999999998" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="664.6859999999999" y="1687.7" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">擷取當前畫布為影格</text>
+</g>
+<g class="node" data-id="UC_BatchImport" data-label="批次匯入外部圖片" data-shape="stadium">
+  <rect x="643.1843125" y="1734.1499999999999" width="160.51" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="723.4393125" y="1752.6" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">批次匯入外部圖片</text>
+</g>
+<g class="node" data-id="UC_Timeline" data-label="時間軸影格管理 (拖曳排序/複製/延遲)" data-shape="stadium">
+  <rect x="577.021" y="1799.05" width="281.29299999999995" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="717.6674999999999" y="1817.5" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">時間軸影格管理 (拖曳排序/複製/延遲)</text>
+</g>
+<g class="node" data-id="UC_PlayPreview" data-label="動態循環播放預覽" data-shape="stadium">
+  <rect x="577.021" y="1863.9499999999998" width="160.51" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="657.276" y="1882.3999999999999" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">動態循環播放預覽</text>
+</g>
+<g class="node" data-id="UC_ExportGif" data-label="匯出高品質 .gif 動畫檔案" data-shape="stadium">
+  <rect x="643.1843125" y="1928.85" width="196.078" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="741.2233125" y="1947.3" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">匯出高品質 .gif 動畫檔案</text>
+</g>
+</svg>

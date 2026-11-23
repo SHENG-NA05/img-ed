@@ -60,7 +60,7 @@ fn main() {
             },
         ],
         global_delay_ms: 100,
-        speed_multiplier: 1.0,
+        speed_multiplier: None,
         loop_count: 0,
         scale: 1.0,
     };

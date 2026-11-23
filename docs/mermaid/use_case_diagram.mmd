@@ -1,0 +1,55 @@
+flowchart LR
+    %% 參與者定義
+    User(["👤 使用者 (User)"])
+    OS(["💻 作業系統 / 檔案系統 (OS / FS)"])
+
+    %% 系統邊界
+    subgraph SystemBoundary ["Photoshop Studio 系統核心邊界 (目標層次架構)"]
+        direction TB
+        
+        subgraph Group_File ["1. 影像檔案管理子系統"]
+            UC_Import(["匯入影像 (檔案選取 / 拖放 / 測試圖卡)"])
+            UC_Export(["匯出合成影像 (PNG / JPG / BMP)"])
+            UC_Reset(["重設為原始圖檔"])
+        end
+
+        subgraph Group_Filter ["2. 影像濾鏡增強子系統"]
+            UC_ApplyTone(["色調處理 (灰階 / 二值化 / 調色盤 / 負片)"])
+            UC_ApplySpatial(["空間域處理 (中值去噪 / 拉普拉斯銳化)"])
+        end
+
+        subgraph Group_Draw ["3. 雙圖層繪圖與標註子系統"]
+            UC_Draw(["筆刷自由塗鴉 (5種專業筆刷)"])
+            UC_Erase(["橡皮擦除標註 (不傷底圖)"])
+            UC_Clear(["清除所有塗鴉"])
+        end
+
+        subgraph Group_NavHistory ["4. 視角導航與歷史管理子系統"]
+            UC_PanZoom(["畫布平移與滾輪縮放 (10%~3200%)"])
+            UC_PixelProbe(["即時像素探針取樣 (座標 / RGB / HEX)"])
+            UC_UndoRedo(["歷史狀態復原與重做 (Undo / Redo)"])
+        end
+
+        subgraph Group_Gif ["5. GIF 動畫製作工作坊子系統"]
+            UC_GifStudio(["製作與匯出動態 GIF 動畫"])
+        end
+    end
+
+    %% 使用者直接目標關聯
+    User --> UC_Import
+    User --> UC_Export
+    User --> UC_Reset
+    User --> UC_ApplyTone
+    User --> UC_ApplySpatial
+    User --> UC_Draw
+    User --> UC_Erase
+    User --> UC_Clear
+    User --> UC_PanZoom
+    User --> UC_PixelProbe
+    User --> UC_UndoRedo
+    User --> UC_GifStudio
+
+    %% 作業系統次參與者關聯
+    UC_Import --> OS
+    UC_Export --> OS
+    UC_GifStudio --> OS

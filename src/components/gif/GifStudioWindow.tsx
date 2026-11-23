@@ -38,15 +38,22 @@ export const GifStudioWindow: React.FC<GifStudioWindowProps> = ({
 
   // Settings
   const [globalDelayMs, setGlobalDelayMs] = useState(100); // 100ms = 10fps
-  const [speedMultiplier, setSpeedMultiplier] = useState(1.0);
   const [loopCount, setLoopCount] = useState(0); // 0 = infinite
   const [scale, setScale] = useState(1.0);
   const [isExporting, setIsExporting] = useState(false);
   const [exportMessage, setExportMessage] = useState<string | null>(null);
 
-  // Animation playback timer
-  const animTimerRef = useRef<number | null>(null);
-  const lastTickTimeRef = useRef<number>(performance.now());
+  // Timeline Pointer Drag & Drop states
+  const [dragSourceIndex, setDragSourceIndex] = useState<number | null>(null);
+  const [dragTargetIndex, setDragTargetIndex] = useState<number | null>(null);
+  const dragStartPosRef = useRef<{ x: number; y: number } | null>(null);
+  const isDraggingRef = useRef<boolean>(false);
+
+  // Synchronize global delay change to all frames immediately
+  const handleGlobalDelayChange = (newDelay: number) => {
+    setGlobalDelayMs(newDelay);
+    setFrames((prev) => prev.map((f) => ({ ...f, delayMs: newDelay })));
+  };
 
   // Load shared frames from Rust backend or props
   useEffect(() => {
@@ -57,7 +64,7 @@ export const GifStudioWindow: React.FC<GifStudioWindowProps> = ({
           const mapped: GifFrameItem[] = shared.map((f: GifFrameInput, idx: number) => ({
             id: f.id || `frame-${Date.now()}-${idx}`,
             imageData: f.image_data,
-            delayMs: f.delay_ms,
+            delayMs: f.delay_ms || 100,
           }));
           setFrames(mapped);
         }
@@ -87,7 +94,7 @@ export const GifStudioWindow: React.FC<GifStudioWindowProps> = ({
                 {
                   id: payload.id || `frame-${Date.now()}`,
                   imageData: payload.image_data,
-                  delayMs: payload.delay_ms,
+                  delayMs: payload.delay_ms || globalDelayMs,
                 },
               ]);
             }
@@ -101,45 +108,21 @@ export const GifStudioWindow: React.FC<GifStudioWindowProps> = ({
     return () => {
       if (unlisten) unlisten();
     };
-  }, []);
+  }, [globalDelayMs]);
 
-  // Dynamic looping preview engine
+  // Dynamic looping preview engine (strictly follows delayMs in real-time)
   useEffect(() => {
-    if (!isPlaying || frames.length === 0) {
-      if (animTimerRef.current !== null) {
-        cancelAnimationFrame(animTimerRef.current);
-        animTimerRef.current = null;
-      }
-      return;
-    }
+    if (!isPlaying || frames.length === 0) return;
 
     const currentFrame = frames[currentFrameIndex];
-    const frameDelay = (currentFrame?.delayMs || globalDelayMs) / speedMultiplier;
+    const delay = Math.max(10, currentFrame?.delayMs ?? globalDelayMs);
 
-    let accumulatedTime = 0;
-    lastTickTimeRef.current = performance.now();
+    const timer = setTimeout(() => {
+      setCurrentFrameIndex((prev) => (prev + 1) % frames.length);
+    }, delay);
 
-    const loop = (now: number) => {
-      const delta = now - lastTickTimeRef.current;
-      lastTickTimeRef.current = now;
-      accumulatedTime += delta;
-
-      if (accumulatedTime >= frameDelay) {
-        accumulatedTime = 0;
-        setCurrentFrameIndex((prev) => (prev + 1) % frames.length);
-      }
-      animTimerRef.current = requestAnimationFrame(loop);
-    };
-
-    animTimerRef.current = requestAnimationFrame(loop);
-
-    return () => {
-      if (animTimerRef.current !== null) {
-        cancelAnimationFrame(animTimerRef.current);
-        animTimerRef.current = null;
-      }
-    };
-  }, [isPlaying, frames, currentFrameIndex, globalDelayMs, speedMultiplier]);
+    return () => clearTimeout(timer);
+  }, [isPlaying, frames, currentFrameIndex, globalDelayMs]);
 
   // Batch import images from local drive
   const handleBatchImport = async () => {
@@ -217,6 +200,90 @@ export const GifStudioWindow: React.FC<GifStudioWindowProps> = ({
     }
   };
 
+  // Timeline pointer-based horizontal drag & drop reordering
+  const handlePointerDownCard = (e: React.PointerEvent, index: number) => {
+    if (e.button !== 0) return;
+    if ((e.target as HTMLElement).closest('button')) return;
+
+    dragStartPosRef.current = { x: e.clientX, y: e.clientY };
+    isDraggingRef.current = false;
+    setDragSourceIndex(index);
+    setDragTargetIndex(null);
+
+    // Capture pointer on this card element
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      // ignore
+    }
+  };
+
+  const handlePointerMoveCard = (e: React.PointerEvent) => {
+    if (dragSourceIndex === null || !dragStartPosRef.current) return;
+
+    const dx = e.clientX - dragStartPosRef.current.x;
+    const dy = e.clientY - dragStartPosRef.current.y;
+
+    if (!isDraggingRef.current && Math.sqrt(dx * dx + dy * dy) > 5) {
+      isDraggingRef.current = true;
+    }
+
+    if (isDraggingRef.current) {
+      // Find element under cursor
+      const elem = document.elementFromPoint(e.clientX, e.clientY);
+      const cardElem = elem?.closest('[data-frame-index]');
+      if (cardElem) {
+        const idx = parseInt(cardElem.getAttribute('data-frame-index') || '-1', 10);
+        if (idx >= 0 && idx < frames.length && idx !== dragSourceIndex) {
+          setDragTargetIndex(idx);
+        } else if (idx === dragSourceIndex) {
+          setDragTargetIndex(null);
+        }
+      }
+    }
+  };
+
+  const handlePointerUpCard = (e: React.PointerEvent, index: number) => {
+    if (dragSourceIndex === null) return;
+
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {
+      // ignore
+    }
+
+    if (isDraggingRef.current && dragTargetIndex !== null && dragTargetIndex !== dragSourceIndex) {
+      const source = dragSourceIndex;
+      const target = dragTargetIndex;
+      setFrames((prev) => {
+        const updated = [...prev];
+        const [moved] = updated.splice(source, 1);
+        updated.splice(target, 0, moved);
+        return updated;
+      });
+      setCurrentFrameIndex(target);
+    } else if (!isDraggingRef.current) {
+      setCurrentFrameIndex(index);
+    }
+
+    setDragSourceIndex(null);
+    setDragTargetIndex(null);
+    dragStartPosRef.current = null;
+    isDraggingRef.current = false;
+  };
+
+  const handlePointerCancelCard = (e: React.PointerEvent) => {
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    } catch {
+      // ignore
+    }
+    setDragSourceIndex(null);
+    setDragTargetIndex(null);
+    dragStartPosRef.current = null;
+    isDraggingRef.current = false;
+  };
+
   // Export GIF
   const handleExportGif = async () => {
     if (frames.length === 0) return;
@@ -243,7 +310,6 @@ export const GifStudioWindow: React.FC<GifStudioWindowProps> = ({
           delay_ms: f.delayMs || globalDelayMs,
         })),
         global_delay_ms: globalDelayMs,
-        speed_multiplier: speedMultiplier,
         loop_count: loopCount,
         scale,
       };
@@ -259,7 +325,7 @@ export const GifStudioWindow: React.FC<GifStudioWindowProps> = ({
   };
 
   // Calculated FPS
-  const currentFps = Math.round((1000 / (globalDelayMs / speedMultiplier)) * 10) / 10;
+  const currentFps = Math.round((1000 / globalDelayMs) * 10) / 10;
 
   return (
     <div className="w-full h-full bg-ps-canvas text-ps-text flex flex-col select-none overflow-hidden font-sans">
@@ -398,33 +464,13 @@ export const GifStudioWindow: React.FC<GifStudioWindowProps> = ({
               max="1000"
               step="10"
               value={globalDelayMs}
-              onChange={(e) => setGlobalDelayMs(parseInt(e.target.value, 10))}
+              onChange={(e) => handleGlobalDelayChange(parseInt(e.target.value, 10))}
               className="w-full accent-ps-accent cursor-pointer h-1.5 bg-ps-canvas rounded-lg"
             />
             <div className="flex justify-between text-[10px] text-ps-textMuted font-mono">
               <span>20ms (極速)</span>
               <span>100ms (標準)</span>
               <span>1000ms (慢速)</span>
-            </div>
-          </div>
-
-          {/* 播放速度倍率 */}
-          <div className="space-y-1.5">
-            <label className="text-xs text-ps-text">播放速度倍率</label>
-            <div className="grid grid-cols-4 gap-1">
-              {[0.5, 1.0, 1.5, 2.0].map((rate) => (
-                <button
-                  key={rate}
-                  onClick={() => setSpeedMultiplier(rate)}
-                  className={`py-1 text-xs rounded font-mono font-medium transition-all ${
-                    speedMultiplier === rate
-                      ? 'bg-ps-accent text-white shadow'
-                      : 'bg-ps-canvas text-ps-text hover:bg-ps-hover border border-ps-border'
-                  }`}
-                >
-                  {rate}x
-                </button>
-              ))}
             </div>
           </div>
 
@@ -491,30 +537,52 @@ export const GifStudioWindow: React.FC<GifStudioWindowProps> = ({
 
       {/* 底部時間軸序列 (Horizontal Timeline) */}
       <footer className="h-[120px] bg-ps-header border-t border-ps-border p-2 flex flex-col shrink-0">
-        <div className="text-[10px] text-ps-textMuted font-semibold px-2 mb-1 flex justify-between">
-          <span>影格序列時間軸 (TIMELINE)</span>
-          <span>支援排序、複製與個別幀管理</span>
+        <div className="text-[10px] text-ps-textMuted font-semibold px-2 mb-1 flex justify-between items-center">
+          <span className="flex items-center space-x-1">
+            <Film className="w-3 h-3 text-ps-accent" />
+            <span>影格序列時間軸 (TIMELINE)</span>
+          </span>
+          <span className="text-ps-accent font-medium">💡 支援滑鼠左右拖曳直接調整影格順序</span>
         </div>
 
         <div className="flex-1 flex space-x-2 overflow-x-auto px-1 py-0.5">
           {frames.map((frame, index) => {
             const isSelected = currentFrameIndex === index;
+            const isDraggingSource = dragSourceIndex === index;
+            const isDragTarget = dragTargetIndex === index;
+
             return (
               <div
                 key={frame.id}
-                onClick={() => setCurrentFrameIndex(index)}
-                className={`w-[80px] h-full shrink-0 rounded-lg p-1 flex flex-col items-center justify-between border cursor-pointer transition-all ${
+                data-frame-index={index}
+                onPointerDown={(e) => handlePointerDownCard(e, index)}
+                onPointerMove={handlePointerMoveCard}
+                onPointerUp={(e) => handlePointerUpCard(e, index)}
+                onPointerCancel={handlePointerCancelCard}
+                className={`w-[84px] h-full shrink-0 rounded-lg p-1 flex flex-col items-center justify-between border cursor-grab active:cursor-grabbing transition-all select-none relative ${
                   isSelected
                     ? 'border-ps-accent bg-ps-accent/15 shadow-md'
                     : 'border-ps-border bg-ps-panel hover:bg-ps-hover'
+                } ${isDraggingSource ? 'opacity-35 scale-95 border-dashed border-ps-accent shadow-inner' : ''} ${
+                  isDragTarget ? 'ring-2 ring-ps-accent scale-105 z-20 bg-ps-accent/25' : ''
                 }`}
               >
+                {/* 拖曳置放指示疊加層 */}
+                {isDragTarget && (
+                  <div className="absolute inset-0 bg-ps-accent/30 rounded-lg border-2 border-ps-accent pointer-events-none flex items-center justify-center z-30">
+                    <span className="text-[10px] text-white font-bold bg-ps-accent px-1.5 py-0.5 rounded shadow whitespace-nowrap">
+                      移至此處
+                    </span>
+                  </div>
+                )}
+
                 {/* 影格縮圖 */}
-                <div className="w-full flex-1 rounded overflow-hidden bg-checkerboard flex items-center justify-center">
+                <div className="w-full flex-1 rounded overflow-hidden bg-checkerboard flex items-center justify-center pointer-events-none">
                   <img
                     src={frame.imageData}
                     alt={`Thumb ${index + 1}`}
                     className="w-full h-full object-cover"
+                    draggable={false}
                   />
                 </div>
 
@@ -530,7 +598,7 @@ export const GifStudioWindow: React.FC<GifStudioWindowProps> = ({
                       }}
                       disabled={index === 0}
                       title="前移"
-                      className="p-0.5 hover:text-ps-textBright disabled:opacity-30"
+                      className="p-0.5 hover:text-ps-textBright disabled:opacity-30 cursor-pointer"
                     >
                       <ChevronLeft className="w-3 h-3" />
                     </button>
@@ -541,7 +609,7 @@ export const GifStudioWindow: React.FC<GifStudioWindowProps> = ({
                       }}
                       disabled={index === frames.length - 1}
                       title="後移"
-                      className="p-0.5 hover:text-ps-textBright disabled:opacity-30"
+                      className="p-0.5 hover:text-ps-textBright disabled:opacity-30 cursor-pointer"
                     >
                       <ChevronRight className="w-3 h-3" />
                     </button>
@@ -551,7 +619,7 @@ export const GifStudioWindow: React.FC<GifStudioWindowProps> = ({
                         handleDuplicate(index);
                       }}
                       title="複製幀"
-                      className="p-0.5 hover:text-ps-textBright"
+                      className="p-0.5 hover:text-ps-textBright cursor-pointer"
                     >
                       <Copy className="w-2.5 h-2.5" />
                     </button>
@@ -561,7 +629,7 @@ export const GifStudioWindow: React.FC<GifStudioWindowProps> = ({
                         handleDelete(index);
                       }}
                       title="刪除幀"
-                      className="p-0.5 hover:text-rose-400"
+                      className="p-0.5 hover:text-rose-400 cursor-pointer"
                     >
                       <Trash2 className="w-2.5 h-2.5" />
                     </button>

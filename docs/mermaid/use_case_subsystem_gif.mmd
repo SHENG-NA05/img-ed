@@ -1,0 +1,27 @@
+flowchart LR
+    User(["👤 使用者 (User)"])
+    OS(["💻 作業系統 / 檔案系統 (OS / FS)"])
+
+    subgraph GifBoundary ["子系統 3：GIF 動畫製作工作坊 (獨立視窗)"]
+        direction TB
+
+        UC_ProduceGif(["製作 GIF 動畫"])
+        
+        UC_Capture(["擷取當前主畫布影格"])
+        UC_BatchImport(["本機批次匯入圖檔"])
+        UC_Timeline(["時間軸影格管理 (拖曳排序 / 複製 / 延遲)"])
+        UC_Preview(["動態循環播放即時預覽"])
+        UC_Export(["匯出動態 .gif 檔案"])
+    end
+
+    User --> UC_ProduceGif
+
+    UC_ProduceGif -.->|<<include>>| UC_Timeline
+    UC_ProduceGif -.->|<<include>>| UC_Preview
+    UC_ProduceGif -.->|<<include>>| UC_Export
+
+    UC_ProduceGif -.->|<<extend>>| UC_Capture
+    UC_ProduceGif -.->|<<extend>>| UC_BatchImport
+
+    UC_BatchImport --> OS
+    UC_Export --> OS

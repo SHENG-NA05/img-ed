@@ -71,7 +71,7 @@ export interface GifFrameInput {
 export interface GifExportOptions {
   frames: GifFrameInput[];
   global_delay_ms: number;
-  speed_multiplier: number;
+  speed_multiplier?: number;
   loop_count: number;
   scale: number;
 }

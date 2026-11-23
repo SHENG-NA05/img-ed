@@ -1,0 +1,205 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1827.3405 1028.45" width="1827.3405" height="1028.45" style="--bg:#18181B;--fg:#F4F4F5;--line:#71717A;--muted:#A1A1AA;--surface:#27272A;--border:#3F3F46;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="seq-arrow" markerWidth="8" markerHeight="5" refX="8" refY="2.5" orient="auto-start-reverse">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" />
+  </marker>
+  <marker id="seq-arrow-open" markerWidth="8" markerHeight="5" refX="8" refY="2.5" orient="auto-start-reverse">
+    <polyline points="0 0, 8 2.5, 0 5" fill="none" stroke="var(--_arrow)" stroke-width="1" />
+  </marker>
+</defs>
+<line class="lifeline" data-actor="User" x1="77.7265" y1="92.45" x2="77.7265" y2="998.45" stroke="var(--_line)" stroke-width="0.75" stroke-dasharray="6 4" />
+<line class="lifeline" data-actor="Inspector" x1="311.6745" y1="70" x2="311.6745" y2="998.45" stroke="var(--_line)" stroke-width="0.75" stroke-dasharray="6 4" />
+<line class="lifeline" data-actor="App" x1="533.7425000000001" y1="70" x2="533.7425000000001" y2="998.45" stroke="var(--_line)" stroke-width="0.75" stroke-dasharray="6 4" />
+<line class="lifeline" data-actor="Bridge" x1="865.4065" y1="70" x2="865.4065" y2="998.45" stroke="var(--_line)" stroke-width="0.75" stroke-dasharray="6 4" />
+<line class="lifeline" data-actor="TauriCmd" x1="1167.0705" y1="70" x2="1167.0705" y2="998.45" stroke="var(--_line)" stroke-width="0.75" stroke-dasharray="6 4" />
+<line class="lifeline" data-actor="RustCore" x1="1375.8825" y1="70" x2="1375.8825" y2="998.45" stroke="var(--_line)" stroke-width="0.75" stroke-dasharray="6 4" />
+<line class="lifeline" data-actor="Viewport" x1="1612.8525" y1="70" x2="1612.8525" y2="998.45" stroke="var(--_line)" stroke-width="0.75" stroke-dasharray="6 4" />
+<g class="block" data-type="opt" data-label="驗證 isCancelled == false">
+  <rect x="451.9335000000001" y="518.45" width="1345.407" height="170" rx="0" ry="0" fill="none" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="451.9335000000001" y="518.45" width="200" height="20" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="459.9335000000001" y="528.45" font-size="11" font-weight="600" fill="var(--_text-sec)" dy="3.8499999999999996">opt [驗證 isCancelled == false]</text>
+</g>
+<g class="block" data-type="rect" data-label="rgb(30, 41, 59)">
+  <rect x="451.9335000000001" y="195.45" width="1345.407" height="493.00000000000006" rx="0" ry="0" fill="rgb(30, 41, 59)" stroke="none" stroke-width="1" opacity="0.3" />
+</g>
+<g class="message" data-from="User" data-to="Inspector" data-label="調整二值化閾值滑桿 (Threshold = 180)" data-line-style="solid" data-arrow-head="filled" data-self="false" data-step="1">
+  <line x1="77.7265" y1="112.45" x2="311.6745" y2="112.45" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <rect x="87.2005" y="94.3" width="215" height="16.3" rx="2" ry="2" fill="var(--bg)" />
+  <text x="194.7005" y="102.45" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">調整二值化閾值滑桿 (Threshold = 180)</text>
+  <circle class="sequence-number" cx="77.7265" cy="112.45" r="9" fill="var(--_arrow)" stroke="var(--bg)" stroke-width="1" />
+  <text x="77.7265" y="112.45" class="sequence-number-label" font-size="10" text-anchor="middle" font-weight="600" fill="var(--bg)" dy="3.5">1</text>
+</g>
+<g class="message" data-from="Inspector" data-to="App" data-label="觸發 onBinaryThresholdChange(180)" data-line-style="solid" data-arrow-head="filled" data-self="false" data-step="2">
+  <line x1="311.6745" y1="152.45" x2="533.7425000000001" y2="152.45" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <rect x="321.7085000000001" y="134.29999999999998" width="202" height="16.3" rx="2" ry="2" fill="var(--bg)" />
+  <text x="422.7085000000001" y="142.45" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">觸發 onBinaryThresholdChange(180)</text>
+  <circle class="sequence-number" cx="311.6745" cy="152.45" r="9" fill="var(--_arrow)" stroke="var(--bg)" stroke-width="1" />
+  <text x="311.6745" y="152.45" class="sequence-number-label" font-size="10" text-anchor="middle" font-weight="600" fill="var(--bg)" dy="3.5">2</text>
+</g>
+<g class="message" data-from="App" data-to="Bridge" data-label="invokeBinary(baseImageData, 180)" data-line-style="solid" data-arrow-head="filled" data-self="false" data-step="3">
+  <line x1="533.7425000000001" y1="235.45" x2="865.4065" y2="235.45" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <rect x="607.0745000000001" y="217.29999999999998" width="185" height="16.3" rx="2" ry="2" fill="var(--bg)" />
+  <text x="699.5745000000001" y="225.45" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">invokeBinary(baseImageData, 180)</text>
+  <circle class="sequence-number" cx="533.7425000000001" cy="235.45" r="9" fill="var(--_arrow)" stroke="var(--bg)" stroke-width="1" />
+  <text x="533.7425000000001" y="235.45" class="sequence-number-label" font-size="10" text-anchor="middle" font-weight="600" fill="var(--bg)" dy="3.5">3</text>
+</g>
+<g class="message" data-from="Bridge" data-to="TauriCmd" data-label="invoke(&quot;process_binary&quot;, { image_data, threshold: 180 })" data-line-style="solid" data-arrow-head="filled" data-self="false" data-step="4">
+  <line x1="865.4065" y1="275.45" x2="1167.0705" y2="275.45" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <rect x="871.2385" y="257.3" width="290" height="16.3" rx="2" ry="2" fill="var(--bg)" />
+  <text x="1016.2385" y="265.45" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">invoke(&quot;process_binary&quot;, { image_data, threshold: 180 })</text>
+  <circle class="sequence-number" cx="865.4065" cy="275.45" r="9" fill="var(--_arrow)" stroke="var(--bg)" stroke-width="1" />
+  <text x="865.4065" y="275.45" class="sequence-number-label" font-size="10" text-anchor="middle" font-weight="600" fill="var(--bg)" dy="3.5">4</text>
+</g>
+<g class="message" data-from="TauriCmd" data-to="RustCore" data-label="decode_image(&amp;image_data)" data-line-style="solid" data-arrow-head="filled" data-self="false" data-step="5">
+  <line x1="1167.0705" y1="315.45" x2="1375.8825" y2="315.45" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <rect x="1193.4765" y="297.3" width="156" height="16.3" rx="2" ry="2" fill="var(--bg)" />
+  <text x="1271.4765" y="305.45" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">decode_image(&amp;image_data)</text>
+  <circle class="sequence-number" cx="1167.0705" cy="315.45" r="9" fill="var(--_arrow)" stroke="var(--bg)" stroke-width="1" />
+  <text x="1167.0705" y="315.45" class="sequence-number-label" font-size="10" text-anchor="middle" font-weight="600" fill="var(--bg)" dy="3.5">5</text>
+</g>
+<g class="message" data-from="TauriCmd" data-to="RustCore" data-label="to_binary(&amp;img, 180)" data-line-style="solid" data-arrow-head="filled" data-self="false" data-step="6">
+  <line x1="1167.0705" y1="355.45" x2="1375.8825" y2="355.45" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <rect x="1217.4765" y="337.3" width="108" height="16.3" rx="2" ry="2" fill="var(--bg)" />
+  <text x="1271.4765" y="345.45" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">to_binary(&amp;img, 180)</text>
+  <circle class="sequence-number" cx="1167.0705" cy="355.45" r="9" fill="var(--_arrow)" stroke="var(--bg)" stroke-width="1" />
+  <text x="1167.0705" y="355.45" class="sequence-number-label" font-size="10" text-anchor="middle" font-weight="600" fill="var(--bg)" dy="3.5">6</text>
+</g>
+<g class="message" data-from="RustCore" data-to="TauriCmd" data-label="回傳 DataURL (Base64)" data-line-style="dashed" data-arrow-head="filled" data-self="false" data-step="7">
+  <line x1="1375.8825" y1="410.45" x2="1167.0705" y2="410.45" stroke="var(--_line)" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#seq-arrow)" />
+  <rect x="1205.4765" y="392.3" width="132" height="16.3" rx="2" ry="2" fill="var(--bg)" />
+  <text x="1271.4765" y="400.45" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">回傳 DataURL (Base64)</text>
+  <circle class="sequence-number" cx="1375.8825" cy="410.45" r="9" fill="var(--_arrow)" stroke="var(--bg)" stroke-width="1" />
+  <text x="1375.8825" y="410.45" class="sequence-number-label" font-size="10" text-anchor="middle" font-weight="600" fill="var(--bg)" dy="3.5">7</text>
+</g>
+<g class="message" data-from="TauriCmd" data-to="Bridge" data-label="IPC 傳回結果字串" data-line-style="dashed" data-arrow-head="filled" data-self="false" data-step="8">
+  <line x1="1167.0705" y1="450.45" x2="865.4065" y2="450.45" stroke="var(--_line)" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#seq-arrow)" />
+  <rect x="962.7385" y="432.3" width="107" height="16.3" rx="2" ry="2" fill="var(--bg)" />
+  <text x="1016.2385" y="440.45" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">IPC 傳回結果字串</text>
+  <circle class="sequence-number" cx="1167.0705" cy="450.45" r="9" fill="var(--_arrow)" stroke="var(--bg)" stroke-width="1" />
+  <text x="1167.0705" y="450.45" class="sequence-number-label" font-size="10" text-anchor="middle" font-weight="600" fill="var(--bg)" dy="3.5">8</text>
+</g>
+<g class="message" data-from="Bridge" data-to="App" data-label="Promise.resolve(previewUrl)" data-line-style="dashed" data-arrow-head="filled" data-self="false" data-step="9">
+  <line x1="865.4065" y1="490.45" x2="533.7425000000001" y2="490.45" stroke="var(--_line)" stroke-width="1" stroke-dasharray="6 4" marker-end="url(#seq-arrow)" />
+  <rect x="620.0745000000001" y="472.3" width="159" height="16.3" rx="2" ry="2" fill="var(--bg)" />
+  <text x="699.5745000000001" y="480.45" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">Promise.resolve(previewUrl)</text>
+  <circle class="sequence-number" cx="865.4065" cy="490.45" r="9" fill="var(--_arrow)" stroke="var(--bg)" stroke-width="1" />
+  <text x="865.4065" y="490.45" class="sequence-number-label" font-size="10" text-anchor="middle" font-weight="600" fill="var(--bg)" dy="3.5">9</text>
+</g>
+<g class="message" data-from="App" data-to="App" data-label="setPreviewImageData(previewUrl)" data-line-style="solid" data-arrow-head="filled" data-self="true" data-step="10">
+  <polyline points="533.7425000000001,558.45 563.7425000000001,558.45 563.7425000000001,578.45 533.7425000000001,578.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <rect x="568.7425000000001" y="560.3000000000001" width="185" height="16.3" rx="2" ry="2" fill="var(--bg)" />
+  <text x="571.7425000000001" y="568.45" font-size="11" text-anchor="start" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">setPreviewImageData(previewUrl)</text>
+  <circle class="sequence-number" cx="533.7425000000001" cy="558.45" r="9" fill="var(--_arrow)" stroke="var(--bg)" stroke-width="1" />
+  <text x="533.7425000000001" y="558.45" class="sequence-number-label" font-size="10" text-anchor="middle" font-weight="600" fill="var(--bg)" dy="3.5">10</text>
+</g>
+<g class="message" data-from="App" data-to="Viewport" data-label="傳遞 previewImageData" data-line-style="solid" data-arrow-head="filled" data-self="false" data-step="11">
+  <line x1="533.7425000000001" y1="628.45" x2="1612.8525" y2="628.45" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <rect x="1007.2975000000001" y="610.3000000000001" width="132" height="16.3" rx="2" ry="2" fill="var(--bg)" />
+  <text x="1073.2975000000001" y="618.45" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">傳遞 previewImageData</text>
+  <circle class="sequence-number" cx="533.7425000000001" cy="628.45" r="9" fill="var(--_arrow)" stroke="var(--bg)" stroke-width="1" />
+  <text x="533.7425000000001" y="628.45" class="sequence-number-label" font-size="10" text-anchor="middle" font-weight="600" fill="var(--bg)" dy="3.5">11</text>
+</g>
+<g class="message" data-from="Viewport" data-to="Viewport" data-label="BaseCanvas 即時繪製預覽" data-line-style="solid" data-arrow-head="filled" data-self="true" data-step="12">
+  <polyline points="1612.8525,668.45 1642.8525,668.45 1642.8525,688.45 1612.8525,688.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <rect x="1647.8525" y="670.3000000000001" width="157" height="16.3" rx="2" ry="2" fill="var(--bg)" />
+  <text x="1650.8525" y="678.45" font-size="11" text-anchor="start" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">BaseCanvas 即時繪製預覽</text>
+  <circle class="sequence-number" cx="1612.8525" cy="668.45" r="9" fill="var(--_arrow)" stroke="var(--bg)" stroke-width="1" />
+  <text x="1612.8525" y="668.45" class="sequence-number-label" font-size="10" text-anchor="middle" font-weight="600" fill="var(--bg)" dy="3.5">12</text>
+</g>
+<g class="message" data-from="User" data-to="Inspector" data-label="確認預覽滿意，點擊「套用變更」" data-line-style="solid" data-arrow-head="filled" data-self="false" data-step="13">
+  <line x1="77.7265" y1="738.45" x2="311.6745" y2="738.45" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <rect x="92.7005" y="720.3000000000001" width="204" height="16.3" rx="2" ry="2" fill="var(--bg)" />
+  <text x="194.7005" y="728.45" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">確認預覽滿意，點擊「套用變更」</text>
+  <circle class="sequence-number" cx="77.7265" cy="738.45" r="9" fill="var(--_arrow)" stroke="var(--bg)" stroke-width="1" />
+  <text x="77.7265" y="738.45" class="sequence-number-label" font-size="10" text-anchor="middle" font-weight="600" fill="var(--bg)" dy="3.5">13</text>
+</g>
+<g class="message" data-from="Inspector" data-to="App" data-label="觸發 onApplyBinary()" data-line-style="solid" data-arrow-head="filled" data-self="false" data-step="14">
+  <line x1="311.6745" y1="778.45" x2="533.7425000000001" y2="778.45" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <rect x="362.2085000000001" y="760.3000000000001" width="121" height="16.3" rx="2" ry="2" fill="var(--bg)" />
+  <text x="422.7085000000001" y="768.45" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">觸發 onApplyBinary()</text>
+  <circle class="sequence-number" cx="311.6745" cy="778.45" r="9" fill="var(--_arrow)" stroke="var(--bg)" stroke-width="1" />
+  <text x="311.6745" y="778.45" class="sequence-number-label" font-size="10" text-anchor="middle" font-weight="600" fill="var(--bg)" dy="3.5">14</text>
+</g>
+<g class="message" data-from="App" data-to="App" data-label="setBaseImageData(previewImageData)" data-line-style="solid" data-arrow-head="filled" data-self="true" data-step="15">
+  <polyline points="533.7425000000001,818.45 563.7425000000001,818.45 563.7425000000001,838.45 533.7425000000001,838.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <rect x="568.7425000000001" y="820.3000000000001" width="207" height="16.3" rx="2" ry="2" fill="var(--bg)" />
+  <text x="571.7425000000001" y="828.45" font-size="11" text-anchor="start" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">setBaseImageData(previewImageData)</text>
+  <circle class="sequence-number" cx="533.7425000000001" cy="818.45" r="9" fill="var(--_arrow)" stroke="var(--bg)" stroke-width="1" />
+  <text x="533.7425000000001" y="818.45" class="sequence-number-label" font-size="10" text-anchor="middle" font-weight="600" fill="var(--bg)" dy="3.5">15</text>
+</g>
+<g class="message" data-from="App" data-to="App" data-label="pushHistory(&quot;套用純黑白二值化&quot;, previewImageData)" data-line-style="solid" data-arrow-head="filled" data-self="true" data-step="16">
+  <polyline points="533.7425000000001,888.45 563.7425000000001,888.45 563.7425000000001,908.45 533.7425000000001,908.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <rect x="568.7425000000001" y="890.3000000000001" width="290" height="16.3" rx="2" ry="2" fill="var(--bg)" />
+  <text x="571.7425000000001" y="898.45" font-size="11" text-anchor="start" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">pushHistory(&quot;套用純黑白二值化&quot;, previewImageData)</text>
+  <circle class="sequence-number" cx="533.7425000000001" cy="888.45" r="9" fill="var(--_arrow)" stroke="var(--bg)" stroke-width="1" />
+  <text x="533.7425000000001" y="888.45" class="sequence-number-label" font-size="10" text-anchor="middle" font-weight="600" fill="var(--bg)" dy="3.5">16</text>
+</g>
+<g class="message" data-from="App" data-to="Viewport" data-label="底圖正式套用並清空預覽快取" data-line-style="solid" data-arrow-head="filled" data-self="false" data-step="17">
+  <line x1="533.7425000000001" y1="958.45" x2="1612.8525" y2="958.45" stroke="var(--_line)" stroke-width="1" marker-end="url(#seq-arrow)" />
+  <rect x="984.2975000000001" y="940.3000000000001" width="178" height="16.3" rx="2" ry="2" fill="var(--bg)" />
+  <text x="1073.2975000000001" y="948.45" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">底圖正式套用並清空預覽快取</text>
+  <circle class="sequence-number" cx="533.7425000000001" cy="958.45" r="9" fill="var(--_arrow)" stroke="var(--bg)" stroke-width="1" />
+  <text x="533.7425000000001" y="958.45" class="sequence-number-label" font-size="10" text-anchor="middle" font-weight="600" fill="var(--bg)" dy="3.5">17</text>
+</g>
+<g class="note" data-position="over" data-actors="App">
+  <polygon points="422.61050000000006,160.45 638.8745,160.45 644.8745,166.45 644.8745,183.45 422.61050000000006,183.45" fill="var(--bg)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <polygon points="638.8745,160.45 644.8745,166.45 638.8745,166.45" fill="var(--_inner-stroke)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="533.7425000000001" y="171.95" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">建立非同步取消標記 isCancelled = false</text>
+</g>
+<g class="note" data-position="over" data-actors="RustCore">
+  <polygon points="1222.8735,363.45 1522.8915,363.45 1528.8915,369.45 1528.8915,386.45 1222.8735,386.45" fill="var(--bg)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <polygon points="1522.8915,363.45 1528.8915,369.45 1522.8915,369.45" fill="var(--_inner-stroke)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1375.8825" y="374.95" font-size="11" text-anchor="middle" font-weight="400" fill="var(--_text-muted)"><tspan x="1375.8825" dy="-3.3000000000000007">遍歷計算 Y &gt;= 180 ? 255 : 0</tspan><tspan x="1375.8825" dy="14.3">encode_rgba_png 零拷貝編碼</tspan></text>
+</g>
+<g class="actor" data-id="User" data-label="👤 使用者" data-type="actor">
+  <g transform="translate(59.7265,32) scale(1.5)">
+    <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" fill="none" stroke="var(--_line)" stroke-width="0.6666666666666666" />
+    <path d="M15 10C15 11.6569 13.6569 13 12 13C10.3431 13 9 11.6569 9 10C9 8.34315 10.3431 7 12 7C13.6569 7 15 8.34315 15 10Z" fill="none" stroke="var(--_line)" stroke-width="0.6666666666666666" />
+    <path d="M5.62842 18.3563C7.08963 17.0398 9.39997 16 12 16C14.6 16 16.9104 17.0398 18.3716 18.3563" fill="none" stroke="var(--_line)" stroke-width="0.6666666666666666" />
+  </g>
+  <text x="77.7265" y="84" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">👤 使用者</text>
+</g>
+<g class="actor" data-id="Inspector" data-label="🖥️ RightInspector" data-type="participant">
+  <rect x="239.495" y="30" width="144.359" height="40" rx="4" ry="4" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="311.6745" y="50" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">🖥️ RightInspector</text>
+</g>
+<g class="actor" data-id="App" data-label="⚛️ App 控制核心" data-type="participant">
+  <rect x="461.9335000000001" y="30" width="143.618" height="40" rx="4" ry="4" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="533.7425000000001" y="50" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">⚛️ App 控制核心</text>
+</g>
+<g class="actor" data-id="Bridge" data-label="🌉 TauriBridge" data-type="participant">
+  <rect x="803.601" y="30" width="123.611" height="40" rx="4" ry="4" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="865.4065" y="50" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">🌉 TauriBridge</text>
+</g>
+<g class="actor" data-id="TauriCmd" data-label="🦀 TauriCommand (lib.rs)" data-type="participant">
+  <rect x="1077.4775" y="30" width="179.18599999999998" height="40" rx="4" ry="4" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="1167.0705" y="50" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">🦀 TauriCommand (lib.rs)</text>
+</g>
+<g class="actor" data-id="RustCore" data-label="⚙️ image_ops (Rust)" data-type="participant">
+  <rect x="1296.6634999999999" y="30" width="158.438" height="40" rx="4" ry="4" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="1375.8825" y="50" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">⚙️ image_ops (Rust)</text>
+</g>
+<g class="actor" data-id="Viewport" data-label="🎨 CanvasViewport (BaseCanvas)" data-type="participant">
+  <rect x="1495.1015" y="30" width="235.50199999999995" height="40" rx="4" ry="4" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="1612.8525" y="50" font-size="13" text-anchor="middle" font-weight="500" fill="var(--_text)" dy="4.55">🎨 CanvasViewport (BaseCanvas)</text>
+</g>
+</svg>

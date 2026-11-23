@@ -1,0 +1,32 @@
+flowchart LR
+    User(["👤 使用者 (User)"])
+
+    subgraph FilterBoundary ["子系統 1：空間域與色調濾鏡管線"]
+        direction TB
+
+        UC_MainFilter(["套用影像增強濾鏡"])
+
+        UC_Grayscale(["灰階轉換 (Luminance)"])
+        UC_Binary(["純黑白二值化 (0-255)"])
+        UC_Palette(["調色盤量化 (NeuQuant)"])
+        UC_Negative(["負片色彩反轉"])
+        UC_Median(["空間域中值濾波"])
+        UC_Laplacian(["拉普拉斯邊緣銳化"])
+
+        UC_Preview(["即時參數運算預覽"])
+        UC_BoxNoise(["局部矩形框選去噪 (3x3/5x5/7x7)"])
+        UC_LaplacianView(["原圖 / 遮罩 / 銳化三段檢視"])
+    end
+
+    User --> UC_MainFilter
+
+    UC_MainFilter --> UC_Grayscale
+    UC_MainFilter --> UC_Binary
+    UC_MainFilter --> UC_Palette
+    UC_MainFilter --> UC_Negative
+    UC_MainFilter --> UC_Median
+    UC_MainFilter --> UC_Laplacian
+
+    UC_MainFilter -.->|<<include>>| UC_Preview
+    UC_Median -.->|<<extend>>| UC_BoxNoise
+    UC_Laplacian -.->|<<extend>>| UC_LaplacianView
